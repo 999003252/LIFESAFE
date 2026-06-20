@@ -1,8 +1,8 @@
-import CalendarPage from './components/CalendarPage'
+import Sidebar from './components/Sidebar'
 
 
 function App() {
- return <CalendarPage />
+ return <Sidebar />
 }
 
 
