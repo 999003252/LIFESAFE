@@ -1,19 +1,30 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import InputField from '../components/InputField'
+import { requestOtp } from '../api'
 
 const Login = () => {
   const [email, setEmail] = useState('')
   const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     if (!email.trim()) {
       setError('Please enter your email')
       return
     }
-    navigate('/otp', { state: { email } })
+    setError('')
+    setLoading(true)
+    try {
+      await requestOtp(email)
+      navigate('/otp', { state: { email } })
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -30,7 +41,9 @@ const Login = () => {
           onChange={(e) => setEmail(e.target.value)}
         />
         {error && <p className="form-error">{error}</p>}
-        <button type="submit" className="login-button">Continue</button>
+        <button type="submit" className="login-button" disabled={loading}>
+          {loading ? 'Sending…' : 'Continue'}
+        </button>
       </form>
       <p className="signup-text fine-print">
         By clicking continue, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
