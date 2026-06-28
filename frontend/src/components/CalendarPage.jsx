@@ -1,11 +1,20 @@
 import '../pages/Calendar.css'
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { clearAuth } from '../auth'
 
 const CalendarPage = () => {
     const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     const monthsOfYear = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
     
     const [mood, setMood] = useState(3)
+
+    const navigate = useNavigate()
+
+    const handleLogout = () => {
+        clearAuth()
+        navigate('/login', { replace: true })
+    }
 
     const currentDate = new Date();
 
@@ -65,6 +74,7 @@ const CalendarPage = () => {
 
     return (
     <div className="calendar-page">
+        <button className="logout-button" onClick={handleLogout}>Log out</button>
         <div className="calendar">
             <h1 className="heading">Calendar</h1>
             <div className="navigate-date">
