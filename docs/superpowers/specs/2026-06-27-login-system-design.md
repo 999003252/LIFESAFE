@@ -13,8 +13,12 @@ routing (the branch's purpose), since the gate requires real routes.
 ## Current State
 
 - React 19 + Vite app in `frontend/`.
-- No router installed. `App.jsx` renders `CalendarPage` directly.
-- No auth/cookie code exists.
+- PR #10 (teammate's login UI) has been **merged** into this branch. It added a
+  password/social "Log in with" screen in `App.jsx`, plus `SocialLogin.jsx`,
+  `InputField.jsx`, `google.svg`, `apple.svg`, and login styling in `index.css`.
+- This redesign replaces that screen with an **OTP-only** flow, reusing the merged
+  `index.css` styling and a simplified `InputField`.
+- No router installed yet. No auth/cookie code exists.
 
 ## Architecture
 
@@ -62,24 +66,37 @@ Cookie name: `lifesafe_auth`. Value: the user's email.
 
 - `src/auth.js` — cookie helpers.
 - `src/components/ProtectedRoute.jsx` — auth gate wrapper.
-- `src/pages/Login.jsx` + `src/pages/Login.css` — SignIn screen.
-- `src/pages/Otp.jsx` + `src/pages/Otp.css` — OTP screen.
+- `src/pages/Login.jsx` — SignIn (email entry) screen.
+- `src/pages/Otp.jsx` — OTP (code entry) screen.
 
 **Edited:**
 
 - `src/main.jsx` — add `<BrowserRouter>`.
-- `src/App.jsx` — define routes.
+- `src/App.jsx` — replace the teammate's login layout with the route table.
+- `src/components/InputField.jsx` — simplify: drop the password/eye-toggle branch;
+  keep a plain icon + text input, reused for both email and OTP entry.
 - Calendar component — add a Logout button.
+- `index.css` — append a small `.brand-wordmark` / subtitle rule and a
+  `.secondary-button` (outlined) variant for "Resend OTP"; reuse existing classes.
+
+**Deleted (teammate leftovers not used by OTP flow):**
+
+- `src/components/SocialLogin.jsx`
+- `src/assets/google.svg`, `src/assets/apple.svg`
 
 ## Styling
 
-Match the provided mockup:
+Reuse the merged `index.css` look (dark `#1e242d` theme, white `.login-container`
+card, `.input-wrapper`/`.input-field` with left icon, full-width dark
+`.login-button`). Both pages render inside `.login-container`.
 
-- Centered `lifesafe` wordmark near the top.
-- SignIn: "Create an account" heading, helper text, `email@domain.com` input,
-  full-width black **Continue** button, fine-print Terms/Privacy line.
-- OTP: "We sent you a OTP" / "Please check your email", code input, full-width
-  black **Login** and **Resend OTP** buttons.
+- `lifesafe` wordmark at the top of each card (new `.brand-wordmark` class).
+- SignIn: wordmark, "Create an account" heading (`.form-title`), helper text,
+  email `InputField` (mail icon) inside `.login-form`, full-width `.login-button`
+  labeled **Continue**, fine-print Terms/Privacy line.
+- OTP: wordmark, "We sent you a OTP" / "Please check your email", OTP `InputField`,
+  full-width `.login-button` labeled **Login**, plus a `.secondary-button`
+  **Resend OTP**.
 
 ## Testing
 
