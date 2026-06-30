@@ -1,0 +1,66 @@
+.wellness-panel{
+    width:320px;
+    background:#1e242d;
+
+    padding:25px;
+
+    display:flex;
+    flex-direction:column;
+
+    gap:20px;
+}
+
+.wellness-panel h2{
+    color:white;
+    font-size:28px;
+}
+
+.wellness-card{
+
+    background:#2d3643;
+
+    border-radius:16px;
+
+    padding:18px;
+
+    box-shadow:0 8px 20px rgba(0,0,0,.25);
+
+}
+
+.wellness-card h3{
+
+    color:#ef9011;
+
+    margin-bottom:12px;
+
+    font-size:18px;
+
+}
+
+.wellness-card p{
+
+    color:white;
+
+    line-height:1.6;
+
+}
+
+.wellness-card span{
+
+    display:block;
+
+    margin-top:12px;
+
+    color:#b6becb;
+
+}
+
+.large-text{
+
+    font-size:34px;
+
+    font-weight:bold;
+
+    color:white;
+
+}

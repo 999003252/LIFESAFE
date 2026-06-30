@@ -1,9 +1,7 @@
-import CalendarPage from './components/CalendarPage'
-
+import FriendsPage from "./pages/FriendsPage";
 
 function App() {
- return <CalendarPage />
+  return <FriendsPage />;
 }
 
-
-export default App
+export default App;
