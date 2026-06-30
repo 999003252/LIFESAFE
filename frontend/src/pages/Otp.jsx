@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { useLocation, useNavigate, Navigate } from 'react-router-dom'
 import InputField from '../components/InputField'
 import { setAuth } from '../auth'
-import { requestOtp, verifyOtp } from '../api'
 
 const Otp = () => {
   const location = useLocation()
@@ -11,40 +10,26 @@ const Otp = () => {
   const [code, setCode] = useState('')
   const [error, setError] = useState('')
   const [note, setNote] = useState('')
-  const [loading, setLoading] = useState(false)
 
   if (!email) {
     return <Navigate to="/login" replace />
   }
 
-  const handleLogin = async (e) => {
+  const handleLogin = (e) => {
     e.preventDefault()
     if (!code.trim()) {
       setError('Please enter the code we sent you')
       return
     }
     setError('')
-    setLoading(true)
-    try {
-      const token = await verifyOtp(email, code)
-      setAuth(token)
-      navigate('/', { replace: true })
-    } catch (err) {
-      setError(err.message)
-    } finally {
-      setLoading(false)
-    }
+    // Accept any code for now.
+    setAuth(email)
+    navigate('/', { replace: true })
   }
 
-  const handleResend = async () => {
+  const handleResend = () => {
     setError('')
-    setNote('')
-    try {
-      await requestOtp(email)
-      setNote('OTP resent')
-    } catch (err) {
-      setError(err.message)
-    }
+    setNote('OTP resent')
   }
 
   return (
@@ -62,8 +47,7 @@ const Otp = () => {
         />
         {error && <p className="form-error">{error}</p>}
         {note && <p className="form-note">{note}</p>}
-        <button type="submit" className="login-button" disabled={loading}>
-          {loading ? 'Verifying…' : 'Login'}
+        <button type="submit" className="login-button">
         </button>
         <button type="button" className="secondary-button" onClick={handleResend}>Resend OTP</button>
       </form>

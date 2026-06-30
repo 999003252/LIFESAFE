@@ -1,30 +1,20 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import InputField from '../components/InputField'
-import { requestOtp } from '../api'
 
 const Login = () => {
   const [email, setEmail] = useState('')
   const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault()
     if (!email.trim()) {
       setError('Please enter your email')
       return
     }
     setError('')
-    setLoading(true)
-    try {
-      await requestOtp(email)
-      navigate('/otp', { state: { email } })
-    } catch (err) {
-      setError(err.message)
-    } finally {
-      setLoading(false)
-    }
+    navigate('/otp', { state: { email } })
   }
 
   return (
@@ -41,8 +31,8 @@ const Login = () => {
           onChange={(e) => setEmail(e.target.value)}
         />
         {error && <p className="form-error">{error}</p>}
-        <button type="submit" className="login-button" disabled={loading}>
-          {loading ? 'Sending…' : 'Continue'}
+        <button type="submit" className="login-button">
+          Continue
         </button>
       </form>
       <p className="signup-text fine-print">
