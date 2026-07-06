@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import './Resources.css'
 
 const affirmations = [
@@ -136,6 +137,7 @@ const cards = [
 
 export default function Resources() {
   const [modal, setModal] = useState(null)
+  const navigate = useNavigate()
 
   return (
     <div className="resources-page">
@@ -146,11 +148,11 @@ export default function Resources() {
           <span className="nav-menu">Menu</span>
           <span className="nav-logo">lifesafe</span>
           <div className="nav-links">
-            <a href="#" className="nav-link">Home</a>
+            <button type="button" className="nav-link" onClick={() => navigate('/')}>Calendar</button>
             <a href="#" className="nav-link">Community</a>
-            <a href="#" className="nav-link">Journal</a>
+            <button type="button" className="nav-link" onClick={() => navigate('/message')}>Message</button>
             <a href="#" className="nav-link active">Resources</a>
-            <button className="nav-btn">New entry</button>
+            <button className="nav-btn" onClick={() => navigate('/')}>New entry</button>
           </div>
         </div>
       </nav>

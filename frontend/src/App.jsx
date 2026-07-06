@@ -3,6 +3,8 @@ import Login from './pages/Login'
 import Otp from './pages/Otp'
 import ProtectedRoute from './components/ProtectedRoute'
 import CalendarPage from './components/CalendarPage'
+import Resources from './pages/Resources'
+import Message from './pages/Message'
 
 const App = () => {
   return (
@@ -14,6 +16,22 @@ const App = () => {
         element={
           <ProtectedRoute>
             <CalendarPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/resources"
+        element={
+          <ProtectedRoute>
+            <Resources />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/message"
+        element={
+          <ProtectedRoute>
+            <Message />
           </ProtectedRoute>
         }
       />

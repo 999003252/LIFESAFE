@@ -52,10 +52,14 @@
 }
 
 .nav-link {
+  background: none;
+  border: none;
+  font-family: 'Montserrat', sans-serif;
   font-size: 0.82rem;
   font-weight: 600;
   color: #78879e;
   text-decoration: none;
+  cursor: pointer;
   transition: color 0.15s;
 }
 
