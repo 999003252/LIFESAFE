@@ -41,7 +41,9 @@ const Message = () => {
             <button type="button" className="nav-link" onClick={() => navigate('/')}>Calendar</button>
             <button type="button" className="nav-link" onClick={() => navigate('/resources')}>Resources</button>
             <button type="button" className="nav-link active">Message</button>
-            <button className="nav-btn" onClick={handleLogout}>Log out</button>
+            <button type="button" className="nav-link" onClick={() => navigate('/entry')}>Entry</button>
+            <button className="nav-btn" onClick={() => navigate('/entry')}>New Entry</button>
+            <button className="nav-btn nav-btn-secondary" onClick={handleLogout}>Log out</button>
           </div>
         </div>
       </nav>

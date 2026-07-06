@@ -152,7 +152,7 @@ export default function Resources() {
             <a href="#" className="nav-link">Community</a>
             <button type="button" className="nav-link" onClick={() => navigate('/message')}>Message</button>
             <a href="#" className="nav-link active">Resources</a>
-            <button className="nav-btn" onClick={() => navigate('/')}>New entry</button>
+            <button className="nav-btn" onClick={() => navigate('/entry')}>New Entry</button>
           </div>
         </div>
       </nav>

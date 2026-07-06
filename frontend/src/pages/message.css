@@ -271,3 +271,13 @@
   color: #78879e;
   font-size: 1.1rem;
 }
+
+.nav-btn-secondary {
+  background: transparent;
+  border: 1px solid #ef9011;
+  color: #ef9011;
+}
+
+.nav-btn-secondary:hover {
+  background: rgba(239, 144, 17, 0.1);
+}

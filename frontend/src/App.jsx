@@ -5,6 +5,7 @@ import ProtectedRoute from './components/ProtectedRoute'
 import CalendarPage from './components/CalendarPage'
 import Resources from './pages/Resources'
 import Message from './pages/Message'
+import Entry from './pages/Entry'
 
 const App = () => {
   return (
@@ -32,6 +33,14 @@ const App = () => {
         element={
           <ProtectedRoute>
             <Message />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/entry"
+        element={
+          <ProtectedRoute>
+            <Entry />
           </ProtectedRoute>
         }
       />

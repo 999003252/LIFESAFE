@@ -84,7 +84,8 @@ const CalendarPage = () => {
                     <button type="button" className="nav-link active">Calendar</button>
                     <button type="button" className="nav-link" onClick={() => navigate('/resources')}>Resources</button>
                     <button type="button" className="nav-link" onClick={() => navigate('/message')}>Message</button>
-                    <button className="nav-btn" onClick={handleLogout}>Log out</button>
+                    <button className="nav-btn" onClick={() => navigate('/entry')}>New Entry</button>
+                    <button className="nav-btn nav-btn-secondary" onClick={handleLogout}>Log out</button>
                 </div>
             </div>
         </nav>
