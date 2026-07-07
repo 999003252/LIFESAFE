@@ -1,0 +1,391 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@400;500;600;700&display=swap');
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+.resources-page {
+  min-height: 100vh;
+  background: #1e242d;
+  font-family: 'Montserrat', sans-serif;
+}
+
+/* ── Nav ── */
+.resources-nav {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: rgba(15, 19, 25, 0.85);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid #222b36;
+}
+
+.resources-nav-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.nav-menu {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #cbd5e1;
+  cursor: default;
+  letter-spacing: 0.02em;
+}
+
+.nav-logo {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.05em;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.nav-link {
+  background: none;
+  border: none;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #78879e;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+
+.nav-link:hover { color: #fff; }
+
+.nav-link.active {
+  color: #fff;
+  border-bottom: 2px solid #ef9011;
+  padding-bottom: 2px;
+}
+
+.nav-btn {
+  background: #ef9011;
+  color: #fff;
+  border: none;
+  border-radius: 99px;
+  padding: 0.45rem 1.1rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+  font-family: 'Montserrat', sans-serif;
+  letter-spacing: 0.02em;
+}
+
+.nav-btn:hover { background: #d97c0d; }
+
+/* ── Hero ── */
+.resources-hero {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 5rem 2rem 3rem;
+}
+
+.resources-eyebrow {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.25rem;
+  color: #78879e;
+  text-transform: uppercase;
+  margin-bottom: 1.25rem;
+}
+
+.resources-heading {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(4rem, 7vw, 7rem);
+  color: #fff;
+  letter-spacing: 0.15rem;
+  line-height: 1;
+  margin-bottom: 1.25rem;
+}
+
+.resources-sub {
+  font-size: 0.95rem;
+  color: #78879e;
+  max-width: 380px;
+  line-height: 1.7;
+}
+
+/* ── Divider ── */
+.resources-divider {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.resources-divider hr {
+  border: none;
+  border-top: 1px solid #222b36;
+}
+
+/* ── Cards ── */
+.resources-cards {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 3rem 2rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.25rem;
+}
+
+.resource-card {
+  background: #0f1319;
+  border: 1px solid #222b36;
+  border-radius: 1.5rem;
+  padding: 1.75rem;
+  height: 200px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, transform 0.15s;
+  text-align: left;
+}
+
+.resource-card:hover {
+  background: #161b22;
+  border-color: #ef9011;
+  transform: translateY(-4px);
+}
+
+.resource-card:active { transform: translateY(0); }
+
+.resource-card.accent {
+  background: #ef9011;
+  border-color: #ef9011;
+}
+
+.resource-card.accent:hover {
+  background: #d97c0d;
+  border-color: #d97c0d;
+}
+
+.resource-card.dashed {
+  background: transparent;
+  border: 1.5px dashed #2c3542;
+}
+
+.resource-card.dashed:hover {
+  border-color: #ef9011;
+  background: #0f1319;
+}
+
+.card-icon {
+  font-size: 1.5rem;
+  color: #78879e;
+}
+
+.resource-card.accent .card-icon { color: rgba(255,255,255,0.65); }
+.resource-card.dashed .card-icon { color: #2c3542; }
+
+.card-bottom { display: flex; flex-direction: column; gap: 0.25rem; }
+
+.card-label {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.6rem;
+  letter-spacing: 0.08rem;
+  color: #fff;
+  line-height: 1.1;
+}
+
+.resource-card.dashed .card-label { color: #2c3542; }
+
+.card-desc {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: #78879e;
+}
+
+.resource-card.accent .card-desc { color: rgba(255,255,255,0.65); }
+
+/* ── Footer ── */
+.resources-footer {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1.5rem 2rem 3rem;
+  border-top: 1px solid #222b36;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.footer-logo {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.footer-note {
+  font-size: 0.75rem;
+  color: #78879e;
+}
+
+.footer-note strong { color: #cbd5e1; }
+
+/* ── Modal ── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.65);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.modal-sheet {
+  background: #161b22;
+  border: 1px solid #222b36;
+  border-radius: 1.5rem;
+  width: 100%;
+  max-width: 420px;
+  padding: 2.5rem;
+  position: relative;
+  animation: modalIn 0.2s ease;
+}
+
+@keyframes modalIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.modal-eyebrow {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.22rem;
+  color: #78879e;
+  text-transform: uppercase;
+  margin-bottom: 0.75rem;
+}
+
+.modal-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2.8rem;
+  color: #fff;
+  letter-spacing: 0.1rem;
+  line-height: 1;
+  margin-bottom: 0.75rem;
+}
+
+.modal-body {
+  font-size: 0.88rem;
+  color: #78879e;
+  line-height: 1.75;
+  margin-bottom: 1.5rem;
+}
+
+.affirmation-text {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #ddd;
+  line-height: 1.6;
+  margin-bottom: 1.25rem;
+  min-height: 56px;
+}
+
+.refresh-btn {
+  background: #1e242d;
+  border: 1px solid #222b36;
+  border-radius: 0.5rem;
+  padding: 0.55rem 1rem;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #78879e;
+  cursor: pointer;
+  margin-bottom: 1.5rem;
+  display: block;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.refresh-btn:hover { color: #fff; border-color: #ef9011; }
+
+.hotline-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: #1e242d;
+  border: 1px solid #222b36;
+  border-radius: 0.75rem;
+  padding: 0.9rem 1rem;
+  text-decoration: none;
+  margin-bottom: 0.6rem;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.hotline-link:hover { border-color: #ef9011; background: #252d38; }
+.hotline-link-icon { font-size: 1.3rem; }
+
+.hotline-link-title {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.hotline-link-sub {
+  font-size: 0.73rem;
+  color: #78879e;
+  margin-top: 0.1rem;
+}
+
+.modal-close-btn {
+  width: 100%;
+  background: #ef9011;
+  color: #fff;
+  border: none;
+  border-radius: 0.6rem;
+  padding: 1rem;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.4rem;
+  letter-spacing: 0.1rem;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  transition: background 0.15s;
+  box-shadow: 0 0 1.5rem 0.5rem rgba(239,144,17,0.15);
+}
+
+.modal-close-btn:hover { background: #d97c0d; }
+.modal-close-btn:active { transform: translateY(1px); }
+
+.modal-x {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #78879e;
+  display: flex;
+  align-items: center;
+  font-size: 1.4rem;
+  transition: color 0.15s;
+}
+
+.modal-x:hover { color: #fff; }
+
+.nav-btn-secondary {
+  background: transparent;
+  border: 1px solid #ef9011;
+  color: #ef9011;
+}
+
+.nav-btn-secondary:hover {
+  background: rgba(239, 144, 17, 0.1);
+}

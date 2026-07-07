@@ -1,15 +1,20 @@
 .sidebar {
     height: 100vh;
     width: 260px;
+    flex: 0 0 260px;
     background: #0f1319;
     border-right: 1px solid #222b36;
     display: flex;
     flex-direction: column;
     transition: width 0.3s ease;
+    position: sticky;
+    top: 0;
+    z-index: 20;
   }
   
   .sidebar.collapsed {
     width: 80px;
+    flex-basis: 80px;
   }
   
   .sidebar-header {
@@ -19,7 +24,7 @@
     padding: 1rem;
   }
   
-  .logo {
+  .sidebar .logo {
     color: white;
     font-size: 1.4rem;
     font-weight: 700;
@@ -31,22 +36,32 @@
     margin-top: 1rem;
   }
   
-  .menu-item {
+  .sidebar .menu-item {
+    width: 100%;
     display: flex;
     align-items: center;
     gap: 1rem;
     padding: 0.9rem 1rem;
     color: #cbd5e1;
+    background: transparent;
+    border: 0;
     cursor: pointer;
     transition: 0.2s;
+    font: inherit;
+    text-align: left;
   }
   
-  .menu-item:hover {
+  .sidebar .menu-item:hover,
+  .sidebar .menu-item.active {
     background: #1e242d;
     color: white;
   }
+
+  .sidebar .menu-item.active {
+    border-left: 4px solid #ef9011;
+  }
   
-  .menu-item i {
+  .sidebar .menu-item i {
     font-size: 1.4rem;
   }
   
@@ -56,6 +71,26 @@
     display: flex;
     align-items: center;
     gap: 0.8rem;
+  }
+
+  .sidebar-logout {
+    margin: 0 1rem 1rem;
+    padding: 0.8rem 1rem;
+    border: 1px solid #2c3542;
+    border-radius: 0.5rem;
+    background: transparent;
+    color: #cbd5e1;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+    font: inherit;
+    transition: 0.2s ease;
+  }
+
+  .sidebar-logout:hover {
+    background: #1e242d;
+    color: #fff;
   }
   
   .avatar {
@@ -102,3 +137,50 @@
     color: #1e242d; 
     font-size: 20px;
   }
+
+@media (max-width: 900px) {
+  .sidebar,
+  .sidebar.collapsed {
+    width: 100%;
+    height: auto;
+    flex-basis: auto;
+    position: static;
+    border-right: 0;
+    border-bottom: 1px solid #222b36;
+  }
+
+  .sidebar-header {
+    justify-content: center;
+  }
+
+  .toggle-btn {
+    display: none;
+  }
+
+  .sidebar-menu {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    margin-top: 0;
+  }
+
+  .sidebar .menu-item {
+    justify-content: center;
+    padding: 0.85rem 0.5rem;
+  }
+
+  .sidebar .menu-item.active {
+    border-left: 0;
+    border-bottom: 3px solid #ef9011;
+  }
+
+  .sidebar-footer,
+  .sidebar-logout {
+    display: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .sidebar .menu-item span {
+    display: none;
+  }
+}
