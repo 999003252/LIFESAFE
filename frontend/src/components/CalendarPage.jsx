@@ -1,20 +1,11 @@
 import '../pages/Calendar.css'
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { clearAuth } from '../auth'
 
 const CalendarPage = () => {
     const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     const monthsOfYear = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
     
     const [mood, setMood] = useState(3)
-
-    const navigate = useNavigate()
-
-    const handleLogout = () => {
-        clearAuth()
-        navigate('/login', { replace: true })
-    }
 
     const currentDate = new Date();
 
@@ -23,7 +14,6 @@ const CalendarPage = () => {
     const [selectedDate, setSelectedDate] = useState(currentDate)
     const[showEventPopup, setShowEventPopup] = useState(false)
     const [events, setEvents] = useState([])
-    const [eventTime, setEventTime] = useState({ hours: '00', minutes: '00' })
     const [eventText, setEventText] = useState('')
 
     const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate()
@@ -47,7 +37,6 @@ const CalendarPage = () => {
             setSelectedDate(clickedDate)
             setShowEventPopup(true)
             setEventText('')
-            setEventTime({ hours: '00', minutes: '00' })
         }
     }
 
@@ -66,7 +55,6 @@ const CalendarPage = () => {
             text: eventText
         }
         setEvents([...events, newEvent])
-        setEventTime({ hours: '00', minutes: '00' })
         setEventText('')
         setMood(3)
         setShowEventPopup(false)
@@ -74,22 +62,6 @@ const CalendarPage = () => {
 
     return (
     <div className="calendar-page-wrapper">
-
-        {/* ── Nav ── */}
-        <nav className="calendar-nav">
-            <div className="calendar-nav-inner">
-                <span className="nav-menu">Menu</span>
-                <span className="nav-logo">lifesafe</span>
-                <div className="nav-links">
-                    <button type="button" className="nav-link active">Calendar</button>
-                    <button type="button" className="nav-link" onClick={() => navigate('/resources')}>Resources</button>
-                    <button type="button" className="nav-link" onClick={() => navigate('/message')}>Message</button>
-                    <button className="nav-btn" onClick={() => navigate('/entry')}>New Entry</button>
-                    <button className="nav-btn nav-btn-secondary" onClick={handleLogout}>Log out</button>
-                </div>
-            </div>
-        </nav>
-
         <div className="calendar-page-center">
         <div className="calendar-page">
             <div className="calendar">
@@ -106,17 +78,17 @@ const CalendarPage = () => {
                     {daysOfWeek.map((day) => <span key={day}>{day}</span>)}
                 </div>
                 <div className="days">
-                    {[...Array(firstDayOfMonth).keys()].map((_, index) => (
-                        <span key={'empty-${index}'}/>
+                    {Array.from({ length: firstDayOfMonth }, (_, index) => (
+                        <span key={`empty-${index}`} />
                     ))}
                     {[...Array(daysInMonth).keys()].map((day) => (
-                        <span 
-                            key={day + 1} 
+                        <span
+                            key={day + 1}
                             className={
-                                day + 1 === currentDate.getDate() && 
-                                currentMonth === currentDate.getMonth() && 
+                                day + 1 === currentDate.getDate() &&
+                                currentMonth === currentDate.getMonth() &&
                                 currentYear === currentDate.getFullYear()
-                                 ? 'current-day' 
+                                 ? 'current-day'
                                  : ''
                             }
                             onClick={() => handleDayClick(day + 1)}
@@ -127,7 +99,7 @@ const CalendarPage = () => {
                 </div>
             </div>
             <div className="events">
-                {showEventPopup && 
+                {showEventPopup &&
                 <div className="event-popup">
                     <div className="time-input">
         <div className="event-popup-time">Mood</div>

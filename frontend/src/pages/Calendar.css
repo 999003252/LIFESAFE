@@ -6,151 +6,49 @@ body {
 
 .calendar-page-wrapper {
     min-height: 100vh;
-    background-color: #364152;
+    width: 100%;
+    background-color: #1e242d;
+    font-family: 'Montserrat', sans-serif;
 }
 
-/* ── Nav (matches Resources/Message nav) ── */
-.calendar-nav {
-    position: sticky;
-    top: 0;
-    z-index: 40;
-    background: rgba(15, 19, 25, 0.85);
-    -webkit-backdrop-filter: blur(10px);
-    backdrop-filter: blur(10px);
-    border-bottom: 1px solid #222b36;
-}
-
-.calendar-nav-inner {
+.calendar-page-center {
     max-width: 1100px;
     margin: 0 auto;
-    padding: 0 2rem;
-    height: 64px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    row-gap: 0.5rem;
-}
-
-.nav-menu {
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: #cbd5e1;
-    cursor: default;
-    letter-spacing: 0.02em;
-}
-
-.nav-logo {
-    font-family: 'Montserrat', sans-serif;
-    font-size: 0.9rem;
-    font-weight: 700;
-    color: #fff;
-    letter-spacing: 0.05em;
-}
-
-.nav-links {
-    display: flex;
-    align-items: center;
-    gap: 2rem;
-    flex-wrap: wrap;
-}
-
-.nav-link {
-    background: none;
-    border: none;
-    font-family: 'Montserrat', sans-serif;
-    font-size: 0.82rem;
-    font-weight: 600;
-    color: #78879e;
-    text-decoration: none;
-    cursor: pointer;
-    transition: color 0.15s;
-    white-space: nowrap;
-}
-
-.nav-link:hover { color: #fff; }
-
-.nav-link.active {
-    color: #fff;
-    border-bottom: 2px solid #ef9011;
-    padding-bottom: 2px;
-}
-
-.nav-btn {
-    background: #ef9011;
-    color: #fff;
-    border: none;
-    border-radius: 99px;
-    padding: 0.45rem 1.1rem;
-    font-size: 0.78rem;
-    font-weight: 700;
-    cursor: pointer;
-    transition: background 0.15s;
-    font-family: 'Montserrat', sans-serif;
-    letter-spacing: 0.02em;
-    white-space: nowrap;
-}
-
-.nav-btn:hover { background: #d97c0d; }
-
-/* ── Card centering ── */
-.calendar-page-center {
-    display: flex;
-    justify-content: center;
-    align-items: center;
     padding: 3rem 2rem;
 }
 
 .calendar-page {
-    width: 90%;
-    max-width: 1100px;
-    background-color: #1e242d;
-    padding: 3rem;
-    border-radius: 3rem;
-    border: 1rem solid #0f1319;
-    display: flex;
-    column-gap: 5rem;
+    width: 100%;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 300px;
+    gap: 3rem;
     position: relative;
-    transform-style: preserve-3d;
-}
-
-.calendar-page::after {
-    content: "";
-    position: absolute;
-    bottom: -12rem;
-    left: 50%;
-    transform: translate(-50%) rotateX(50deg);
-    width: 90%;
-    height: 16rem;
-    background-color: rgba(0, 0, 0, 0.5);
-    border-radius: 20rem;
-    filter: blur(4rem);
 }
 
 .calendar {
-    width: 45%;
+    min-width: 0;
 }
 
-.heading {
+.calendar-page .heading {
     font-family: "Bebas Neue", sans-serif;
-    font-size: clamp(2.5rem, 5vw, 7rem);
+    font-size: clamp(3rem, 5vw, 5.5rem);
     color: #fff;
     letter-spacing: 0.3rem;
+    margin-bottom: 2rem;
 }
 
 .navigate-date {
     display: flex;
     align-items: center;
     column-gap: 1rem;
-    margin: 3.5rem 0;
+    margin-bottom: 2rem;
     flex-wrap: wrap;
     row-gap: 0.5rem;
 }
 
 .navigate-date h2 {
-    font-size: clamp(1.2rem, 2.5vw, 2.5rem);
+    font-size: clamp(1.3rem, 2.5vw, 2.2rem);
     color: #bbb;
-    padding-left: 1.3rem;
 }
 
 .buttons {
@@ -160,76 +58,88 @@ body {
 }
 
 .buttons i {
-    width: 3.5rem;
-    height: 3.5rem;
+    width: 2.75rem;
+    height: 2.75rem;
     background-color: #2c3542;
-    border-radius: 50%;
+    border-radius: 0.75rem;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 2rem;
+    font-size: 1.6rem;
     color: #c97f1a;
     cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+}
+
+.buttons i:hover {
+    background-color: #ef9011;
+    color: #fff;
 }
 
 .weekdays {
     width: 100%;
-    display: flex;
-    justify-content: space-between;
-    margin: 3rem 0;
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
 }
 
 .weekdays span {
     font-size: clamp(0.8rem, 1.5vw, 1.2rem);
     color: #78879e;
-    letter-spacing: 0.15rem;
+    letter-spacing: 0.08rem;
+    text-align: center;
 }
 
 .days {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 0.5rem;
+    background: #0f1319;
+    border: 1px solid #222b36;
+    border-radius: 1rem;
+    padding: 1rem;
 }
 
 .days span {
-    font-size: clamp(1rem, 2vw, 1.6rem);
-    width: calc(100% / 7);
+    font-size: clamp(0.95rem, 2vw, 1.2rem);
     aspect-ratio: 1;
     display: flex;
     justify-content: center;
     align-items: center;
     color:#ddd;
-    text-shadow: 0 .5rem 1 rem rgba(0, 0, 0, 0.2)
+    border-radius: 0.75rem;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+}
+
+.days span:not(:empty):hover {
+    background-color: #161b22;
+    color: #fff;
 }
 
 .current-day {
     background-color: #ef9011;
-    border-radius: 50%;
-    box-shadow: 0 0 1.5rem, 1rem rgba(239, 144, 17, 0.3);
+    color: #fff;
+    box-shadow: 0 0 1.5rem 0.2rem rgba(239, 144, 17, 0.25);
 }
 
 .events {
-    width: 55%;
-    height: auto;
-    padding: 3rem 0;
+    min-width: 0;
 }
 
 .event-popup {
-    position: absolute;
-    top: 38%;
-    left: 3rem;
-    background-color: #161b22;
-    width: clamp(20rem, 80vw, 40rem);
-    aspect-ratio: 10 / 9;
-    border-radius: 1rem;
-    box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.3);
+    position: relative;
+    background-color: #0f1319;
+    border: 1px solid #222b36;
+    width: 100%;
+    border-radius: 1.25rem;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
     display: flex;
-   flex-direction: column;
-   justify-content: center;
-   align-items: center;
-   row-gap: 2rem;
-   max-width: calc(100% - 6rem);
-
-
+    flex-direction: column;
+    align-items: stretch;
+    row-gap: 1.25rem;
 }
 
 .time-input {
@@ -238,50 +148,36 @@ body {
 }
 
 .event-popup-time {
-    width: clamp(4rem, 4cqi, 7rem);
-    background-color: #00a3ff;
+    width: fit-content;
+    background-color: #161b22;
+    border: 1px solid #ef9011;
     color: #fff;
     font-family: "Bebas Neue", sans-serif;
-    font-size: clamp(1.5rem, 1.5cqi, 2.2rem);
+    font-size: 1.4rem;
     display: flex;
     justify-content: center;
     align-items: center;
-    box-shadow: 0 0 1.5rem 1rem rgba(0, 163, 255, 0.2);
+    padding: 0.4rem 0.85rem;
+    border-radius: 0.5rem;
     letter-spacing: 0.1rem;
-    margin-top: 1rem;
-}
-
-.time-input input {
-    background-color: transparent;
-    border: none;
-    border-top: .2rem solid #00a3ff;
-    border-bottom: .2rem solid #00a3ff;
-    color: #fff;
-    width: clamp(4rem, 4cqi, 7rem);
-    height: 4rem;
-    text-align: center;
-    font-size: clamp(1.2rem, 1.2cqi, 1.6rem);
-}
-
-.time-input input[type="number"]::-webkit-outer-spin-button,
-.time-input input[type="number"]::-webkit-inner-spin-button {
-    appearance: none;
 }
 
 .event-popup textarea {
-    width: clamp(12rem, 60vw, 25rem);
-    aspect-ratio: 5/2;
-    resize: none;
-    background-color: #0f1319;
-    border: none;
+    width: 100%;
+    min-height: 140px;
+    resize: vertical;
+    background-color: #161b22;
+    border: 1px solid #222b36;
     padding: 1rem;
-    border-radius: .5rem;
+    border-radius: 0.75rem;
     color: #78879e;
-    transition: border 0.5s;
+    transition: border-color 0.2s;
+    font-family: 'Montserrat', sans-serif;
 }
 
 .event-popup textarea:focus {
-    border: .1rem solid #00a3ff;
+    outline: none;
+    border-color: #ef9011;
 }
 
 .event-popup textarea::placeholder{
@@ -294,16 +190,17 @@ body {
 }
 
 .event-popup-btn {
-    width: clamp(12rem, 60vw, 25rem);
-    height: 4rem;
+    width: 100%;
+    min-height: 3rem;
     background-color: #ef9011;
     color: #fff;
-    font-family: "Bebas Neue", sans-serif;
-    font-size: clamp(1.2rem, 3vw, 2.2rem);
-    letter-spacing: 0.1rem;
+    font-size: 0.85rem;
+    font-weight: 700;
     border: none;
-    box-shadow: 0 0 1.5rem 1rem rgba(239, 144, 17, 0.2);
+    border-radius: 99px;
+    box-shadow: 0 0 1.5rem 0.3rem rgba(239, 144, 17, 0.15);
     cursor: pointer;
+    font-family: 'Montserrat', sans-serif;
 }
 
 .event-popup-btn:active {
@@ -407,10 +304,9 @@ body {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
-    margin-top: 2rem;
 }
 
-.stat-card {
+.calendar-page .stat-card {
     background-color: #161b22;
     border-radius: 1rem;
     padding: 1.25rem;
@@ -418,12 +314,12 @@ body {
     box-shadow: 0 0.5rem 1rem rgba(0,0,0,.2);
 }
 
-.stat-card h2 {
+.calendar-page .stat-card h2 {
     font-size: 2rem;
     margin-bottom: 0.5rem;
 }
 
-.stat-card h3 {
+.calendar-page .stat-card h3 {
     font-family: "Bebas Neue", sans-serif;
     font-size: 2rem;
     color: #ef9011;
@@ -431,7 +327,7 @@ body {
     margin-bottom: 0.25rem;
 }
 
-.stat-card p {
+.calendar-page .stat-card p {
     color: #78879e;
     font-size: 1.1rem;
 }
@@ -443,16 +339,8 @@ body {
     }
 
     .calendar-page {
-        flex-direction: column;
-        column-gap: 0;
-        row-gap: 2.5rem;
-        padding: 2rem;
-        width: 95%;
-    }
-
-    .calendar,
-    .events {
-        width: 100%;
+        grid-template-columns: 1fr;
+        gap: 2rem;
     }
 
     .navigate-date {
@@ -461,28 +349,14 @@ body {
 }
 
 @media (max-width: 640px) {
-    .calendar-nav-inner {
-        padding: 0.75rem 1.25rem;
-        height: auto;
-    }
-
-    .nav-links {
-        gap: 1rem;
-    }
-
-    .nav-menu {
-        display: none;
-    }
-
-    .calendar-page {
-        padding: 1.5rem;
-        border-radius: 2rem;
-        border-width: 0.6rem;
-    }
-
     .buttons i {
         width: 2.75rem;
         height: 2.75rem;
         font-size: 1.5rem;
+    }
+
+    .days {
+        gap: 0.35rem;
+        padding: 0.75rem;
     }
 }

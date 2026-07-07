@@ -1,0 +1,333 @@
+.sidebar {
+    --sidebar-speed: 260ms;
+    height: 100vh;
+    width: 260px;
+    flex: 0 0 260px;
+    background: #0f1319;
+    border-right: 1px solid #222b36;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition:
+      width var(--sidebar-speed) ease,
+      flex-basis var(--sidebar-speed) ease;
+    position: sticky;
+    top: 0;
+    z-index: 20;
+  }
+  
+  .sidebar.collapsed {
+    width: 80px;
+    flex-basis: 80px;
+  }
+  
+  .sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    min-height: 68px;
+  }
+  
+  .sidebar .logo {
+    color: white;
+    font-size: 1.4rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    white-space: nowrap;
+    overflow: hidden;
+    opacity: 1;
+    max-width: 150px;
+    transform: translateX(0);
+    transition:
+      opacity 180ms ease,
+      max-width var(--sidebar-speed) ease,
+      transform var(--sidebar-speed) ease;
+  }
+
+  .sidebar.collapsed .logo {
+    opacity: 0;
+    max-width: 0;
+    transform: translateX(-0.5rem);
+  }
+  
+  .sidebar-menu {
+    flex: 1;
+    margin-top: 1rem;
+  }
+  
+  .sidebar .menu-item {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.9rem 1rem;
+    color: #cbd5e1;
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+    transition:
+      background-color 180ms ease,
+      color 180ms ease,
+      padding var(--sidebar-speed) ease;
+    font: inherit;
+    text-align: left;
+    overflow: hidden;
+  }
+
+  .sidebar.collapsed .menu-item {
+    justify-content: center;
+    gap: 0;
+    padding: 0.9rem 0;
+  }
+  
+  .sidebar .menu-item:hover,
+  .sidebar .menu-item.active {
+    background: #1e242d;
+    color: white;
+  }
+
+  .sidebar .menu-item.active {
+    border-left: 4px solid #ef9011;
+  }
+
+  .sidebar.collapsed .menu-item.active {
+    border-left-width: 4px;
+  }
+  
+  .sidebar .menu-item i {
+    flex: 0 0 1.4rem;
+    font-size: 1.4rem;
+  }
+
+  .sidebar .menu-item span,
+  .account-logout span,
+  .user-info {
+    white-space: nowrap;
+    overflow: hidden;
+    opacity: 1;
+    max-width: 170px;
+    transform: translateX(0);
+    transition:
+      opacity 160ms ease,
+      max-width var(--sidebar-speed) ease,
+      transform var(--sidebar-speed) ease;
+  }
+
+  .sidebar.collapsed .menu-item span,
+  .sidebar.collapsed .account-logout span,
+  .sidebar.collapsed .user-info {
+    opacity: 0;
+    max-width: 0;
+    transform: translateX(-0.5rem);
+  }
+  
+  .sidebar-account {
+    position: relative;
+    border-top: 1px solid #222b36;
+  }
+
+  .sidebar-footer {
+    width: 100%;
+    padding: 1rem;
+    border: 0;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    min-height: 73px;
+    overflow: hidden;
+    cursor: pointer;
+    font: inherit;
+    text-align: left;
+    transition: background-color 180ms ease;
+  }
+
+  .sidebar-footer:hover,
+  .sidebar-footer.open {
+    background: #161b22;
+  }
+
+  .account-popover {
+    position: absolute;
+    left: 1rem;
+    right: 1rem;
+    bottom: calc(100% + 0.75rem);
+    z-index: 30;
+    max-height: 0;
+    opacity: 0;
+    transform: translateY(0.75rem) scale(0.98);
+    transform-origin: bottom left;
+    pointer-events: none;
+    overflow: hidden;
+    transition:
+      opacity 180ms ease,
+      transform 220ms ease,
+      max-height 220ms ease;
+  }
+
+  .account-popover.open {
+    max-height: 4rem;
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+  }
+
+  .account-logout {
+    width: 100%;
+    min-height: 46px;
+    padding: 0.8rem 1rem;
+    border: 1px solid #2c3542;
+    border-radius: 0.5rem;
+    background: #0f1319;
+    color: #cbd5e1;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+    font: inherit;
+    transition:
+      background-color 180ms ease,
+      border-color 180ms ease,
+      color 180ms ease;
+    overflow: hidden;
+  }
+
+  .sidebar.collapsed .account-popover {
+    left: 0.75rem;
+    right: 0.75rem;
+  }
+
+  .sidebar.collapsed .account-logout {
+    justify-content: center;
+    gap: 0;
+    padding: 0.8rem 0;
+  }
+
+  .account-logout:hover {
+    background: #1e242d;
+    border-color: #ef9011;
+    color: #fff;
+  }
+  
+  .avatar {
+    flex: 0 0 40px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    object-position: center;
+    background: #fff;
+  }
+  
+  .user-info {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .user-name {
+    color: white;
+    font-size: 0.9rem;
+  }
+  
+  .user-email {
+    color: #94a3b8;
+    font-size: 0.75rem;
+  }
+
+  .toggle-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #ef9011; 
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition:
+      background-color 180ms ease,
+      transform var(--sidebar-speed) ease;
+  }
+
+  .sidebar.collapsed .toggle-btn {
+    transform: translateX(0);
+  }
+  
+  .toggle-btn:hover {
+    background: #d97c0d; 
+    transform: scale(1.05);
+  }
+
+  .sidebar.collapsed .toggle-btn:hover {
+    transform: scale(1.05);
+  }
+  
+  .toggle-btn i {
+    color: #1e242d; 
+    font-size: 20px;
+  }
+
+@media (max-width: 900px) {
+  .sidebar,
+  .sidebar.collapsed {
+    width: 100%;
+    height: auto;
+    flex-basis: auto;
+    position: static;
+    border-right: 0;
+    border-bottom: 1px solid #222b36;
+    overflow: visible;
+  }
+
+  .sidebar-header {
+    justify-content: center;
+  }
+
+  .toggle-btn {
+    display: none;
+  }
+
+  .sidebar-menu {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    margin-top: 0;
+  }
+
+  .sidebar .menu-item {
+    justify-content: center;
+    padding: 0.85rem 0.5rem;
+  }
+
+  .sidebar .menu-item.active {
+    border-left: 0;
+    border-bottom: 3px solid #ef9011;
+  }
+
+  .sidebar-footer,
+  .sidebar-account {
+    display: none;
+  }
+
+  .sidebar .logo,
+  .sidebar .menu-item span {
+    opacity: 1;
+    max-width: none;
+    transform: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .sidebar .menu-item span {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sidebar,
+  .sidebar *,
+  .sidebar *::before,
+  .sidebar *::after {
+    transition-duration: 0.01ms !important;
+  }
+}

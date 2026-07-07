@@ -1,7 +1,5 @@
 import './Entry.css'
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { clearAuth } from '../auth'
 
 const moods = [
   { id: 'veryHappy', icon: 'sentiment_very_satisfied', label: 'Very Happy' },
@@ -40,17 +38,11 @@ const moodPrompts = {
 }
 
 const Entry = () => {
-  const navigate = useNavigate()
   const [selectedMood, setSelectedMood] = useState(null)
   const [step, setStep] = useState(0)
   const [answers, setAnswers] = useState(['', '', ''])
   const [entries, setEntries] = useState([])
   const [savedConfirmation, setSavedConfirmation] = useState('')
-
-  const handleLogout = () => {
-    clearAuth()
-    navigate('/login', { replace: true })
-  }
 
   const handleMoodSelect = (moodId) => {
     setSelectedMood(moodId)
@@ -101,22 +93,6 @@ const Entry = () => {
 
   return (
     <div className="entry-page">
-
-      {/* ── Nav ── */}
-      <nav className="entry-nav">
-        <div className="entry-nav-inner">
-          <span className="nav-menu">Menu</span>
-          <span className="nav-logo">lifesafe</span>
-          <div className="nav-links">
-            <button type="button" className="nav-link" onClick={() => navigate('/')}>Calendar</button>
-            <button type="button" className="nav-link" onClick={() => navigate('/resources')}>Resources</button>
-            <button type="button" className="nav-link" onClick={() => navigate('/message')}>Message</button>
-            <button type="button" className="nav-link active">Entry</button>
-            <button className="nav-btn nav-btn-secondary" onClick={handleLogout}>Log out</button>
-          </div>
-        </div>
-      </nav>
-
       <div className="entry-content">
         <h1 className="heading">Journal Entry</h1>
 
