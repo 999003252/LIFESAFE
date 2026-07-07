@@ -2,9 +2,10 @@ import { Routes, Route } from 'react-router-dom'
 import Login from './pages/Login'
 import Otp from './pages/Otp'
 import ProtectedRoute from './components/ProtectedRoute'
+import ProtectedLayout from './components/ProtectedLayout'
 import CalendarPage from './components/CalendarPage'
 import Resources from './pages/Resources'
-import Message from './pages/Message'
+import Message from './pages/message'
 import Entry from './pages/Entry'
 
 const App = () => {
@@ -16,7 +17,9 @@ const App = () => {
         path="/"
         element={
           <ProtectedRoute>
-            <CalendarPage />
+            <ProtectedLayout>
+              <CalendarPage />
+            </ProtectedLayout>
           </ProtectedRoute>
         }
       />
@@ -24,7 +27,9 @@ const App = () => {
         path="/resources"
         element={
           <ProtectedRoute>
-            <Resources />
+            <ProtectedLayout>
+              <Resources />
+            </ProtectedLayout>
           </ProtectedRoute>
         }
       />
@@ -32,7 +37,9 @@ const App = () => {
         path="/message"
         element={
           <ProtectedRoute>
-            <Message />
+            <ProtectedLayout>
+              <Message />
+            </ProtectedLayout>
           </ProtectedRoute>
         }
       />
@@ -40,7 +47,9 @@ const App = () => {
         path="/entry"
         element={
           <ProtectedRoute>
-            <Entry />
+            <ProtectedLayout>
+              <Entry />
+            </ProtectedLayout>
           </ProtectedRoute>
         }
       />

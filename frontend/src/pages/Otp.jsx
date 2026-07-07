@@ -33,24 +33,27 @@ const Otp = () => {
   }
 
   return (
-    <div className="login-container">
-      <h1 className="brand-wordmark">lifesafe</h1>
-      <h2 className="form-title">We sent you a OTP</h2>
-      <p className="form-subtitle">Please check your email</p>
-      <form className="login-form" onSubmit={handleLogin}>
-        <InputField
-          type="text"
-          placeholder="Enter OTP"
-          icon="lock"
-          value={code}
-          onChange={(e) => setCode(e.target.value)}
-        />
-        {error && <p className="form-error">{error}</p>}
-        {note && <p className="form-note">{note}</p>}
-        <button type="submit" className="login-button">
-        </button>
-        <button type="button" className="secondary-button" onClick={handleResend}>Resend OTP</button>
-      </form>
+    <div className="auth-page">
+      <div className="login-container">
+        <h1 className="brand-wordmark">lifesafe</h1>
+        <h2 className="form-title">We sent you a OTP</h2>
+        <p className="form-subtitle">Please check your email</p>
+        <form className="login-form" onSubmit={handleLogin}>
+          <InputField
+            type="text"
+            placeholder="Enter OTP"
+            icon="lock"
+            value={code}
+            onChange={(e) => setCode(e.target.value)}
+          />
+          {error && <p className="form-error">{error}</p>}
+          {note && <p className="form-note">{note}</p>}
+          <button type="submit" className="login-button">
+            Verify OTP
+          </button>
+          <button type="button" className="secondary-button" onClick={handleResend}>Resend OTP</button>
+        </form>
+      </div>
     </div>
   )
 }

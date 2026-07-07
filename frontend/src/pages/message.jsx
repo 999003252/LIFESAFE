@@ -1,7 +1,5 @@
-import '../pages/Message.css'
+import './message.css'
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { clearAuth } from '../auth'
 
 const quickMessages = [
   "Thinking of you today.",
@@ -10,15 +8,9 @@ const quickMessages = [
 ]
 
 const Message = () => {
-  const navigate = useNavigate()
   const [recipient, setRecipient] = useState('')
   const [customText, setCustomText] = useState('')
   const [sentConfirmation, setSentConfirmation] = useState('')
-
-  const handleLogout = () => {
-    clearAuth()
-    navigate('/login', { replace: true })
-  }
 
   const handleSend = (text) => {
     if (!recipient.trim()) {
@@ -31,27 +23,8 @@ const Message = () => {
 
   return (
     <div className="message-page">
-
-      {/* ── Nav ── */}
-      <nav className="message-nav">
-        <div className="message-nav-inner">
-          <span className="nav-menu">Menu</span>
-          <span className="nav-logo">lifesafe</span>
-          <div className="nav-links">
-            <button type="button" className="nav-link" onClick={() => navigate('/')}>Calendar</button>
-            <button type="button" className="nav-link" onClick={() => navigate('/resources')}>Resources</button>
-            <button type="button" className="nav-link active">Message</button>
-            <button type="button" className="nav-link" onClick={() => navigate('/entry')}>Entry</button>
-            <button className="nav-btn" onClick={() => navigate('/entry')}>New Entry</button>
-            <button className="nav-btn nav-btn-secondary" onClick={handleLogout}>Log out</button>
-          </div>
-        </div>
-      </nav>
-
       <div className="message-content">
         <div className="message-main">
-          <h1 className="heading">Message</h1>
-
           <div className="recipient-row">
             <span>Send a message to</span>
             <input

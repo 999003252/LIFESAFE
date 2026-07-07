@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import './Resources.css'
 
 const affirmations = [
@@ -137,26 +136,9 @@ const cards = [
 
 export default function Resources() {
   const [modal, setModal] = useState(null)
-  const navigate = useNavigate()
 
   return (
     <div className="resources-page">
-
-      {/* ── Nav ── */}
-      <nav className="resources-nav">
-        <div className="resources-nav-inner">
-          <span className="nav-menu">Menu</span>
-          <span className="nav-logo">lifesafe</span>
-          <div className="nav-links">
-            <button type="button" className="nav-link" onClick={() => navigate('/')}>Calendar</button>
-            <a href="#" className="nav-link">Community</a>
-            <button type="button" className="nav-link" onClick={() => navigate('/message')}>Message</button>
-            <a href="#" className="nav-link active">Resources</a>
-            <button className="nav-btn" onClick={() => navigate('/entry')}>New Entry</button>
-          </div>
-        </div>
-      </nav>
-
       {/* ── Hero ── */}
       <section className="resources-hero">
         <p className="resources-eyebrow">Resources</p>
@@ -185,14 +167,6 @@ export default function Resources() {
           </div>
         ))}
       </div>
-
-      {/* ── Footer ── */}
-      <footer className="resources-footer">
-        <span className="footer-logo">lifesafe</span>
-        <p className="footer-note">
-          In crisis? Call or text <strong>988</strong> — available 24/7.
-        </p>
-      </footer>
 
       {modal && <Modal type={modal} onClose={() => setModal(null)} />}
     </div>

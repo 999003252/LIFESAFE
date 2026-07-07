@@ -1,0 +1,18 @@
+.protected-layout {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  align-items: stretch;
+  background: #1e242d;
+}
+
+.protected-content {
+  flex: 1;
+  min-width: 0;
+}
+
+@media (max-width: 900px) {
+  .protected-layout {
+    flex-direction: column;
+  }
+}

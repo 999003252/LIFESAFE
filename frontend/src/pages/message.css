@@ -6,86 +6,11 @@
   font-family: 'Montserrat', sans-serif;
 }
 
-/* ── Nav (matches Resources nav) ── */
-.message-nav {
-  position: sticky;
-  top: 0;
-  z-index: 40;
-  background: rgba(15, 19, 25, 0.85);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid #222b36;
+.message-page .message-nav,
+.message-page .message-main > .heading {
+  display: none;
 }
 
-.message-nav-inner {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 0 2rem;
-  height: 64px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.nav-menu {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #cbd5e1;
-  cursor: default;
-  letter-spacing: 0.02em;
-}
-
-.nav-logo {
-  font-family: 'Montserrat', sans-serif;
-  font-size: 0.9rem;
-  font-weight: 700;
-  color: #fff;
-  letter-spacing: 0.05em;
-}
-
-.nav-links {
-  display: flex;
-  align-items: center;
-  gap: 2rem;
-}
-
-.nav-link {
-  background: none;
-  border: none;
-  font-family: 'Montserrat', sans-serif;
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: #78879e;
-  text-decoration: none;
-  cursor: pointer;
-  transition: color 0.15s;
-}
-
-.nav-link:hover { color: #fff; }
-
-.nav-link.active {
-  color: #fff;
-  border-bottom: 2px solid #ef9011;
-  padding-bottom: 2px;
-}
-
-.nav-btn {
-  background: #ef9011;
-  color: #fff;
-  border: none;
-  border-radius: 99px;
-  padding: 0.45rem 1.1rem;
-  font-size: 0.78rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: background 0.15s;
-  font-family: 'Montserrat', sans-serif;
-  letter-spacing: 0.02em;
-}
-
-.nav-btn:hover { background: #d97c0d; }
-
-/* ── Content ── */
 .message-content {
   max-width: 1100px;
   margin: 0 auto;
@@ -96,14 +21,6 @@
 
 .message-main {
   flex: 1;
-}
-
-.heading {
-  font-family: "Bebas Neue", sans-serif;
-  font-size: clamp(3rem, 3.5cqi, 5.5rem);
-  color: #fff;
-  letter-spacing: 0.3rem;
-  margin-bottom: 2rem;
 }
 
 .recipient-row {
@@ -144,7 +61,7 @@
   margin-bottom: 1.5rem;
 }
 
-.section-label {
+.message-page .section-label {
   font-family: "Bebas Neue", sans-serif;
   font-size: 1.6rem;
   color: #bbb;
@@ -172,7 +89,7 @@
   font-size: 0.9rem;
 }
 
-.send-button {
+.message-page .send-button {
   display: flex;
   align-items: center;
   gap: 0.35rem;
@@ -190,13 +107,13 @@
   box-shadow: 0 0 1.5rem 0.3rem rgba(239, 144, 17, 0.15);
 }
 
-.send-button i {
+.message-page .send-button i {
   font-size: 1rem;
 }
 
-.send-button:hover:not(:disabled) { background: #d97c0d; }
+.message-page .send-button:hover:not(:disabled) { background: #d97c0d; }
 
-.send-button:disabled {
+.message-page .send-button:disabled {
   background: #2c3542;
   color: #78879e;
   box-shadow: none;
@@ -234,7 +151,7 @@
   margin-top: 0.75rem;
 }
 
-.supporting-text {
+.message-page .supporting-text {
   font-size: 0.75rem;
   color: #78879e;
 }
@@ -246,7 +163,7 @@
   gap: 1.5rem;
 }
 
-.stat-card {
+.message-page .stat-card {
   background-color: #161b22;
   border-radius: 1rem;
   padding: 1.25rem;
@@ -254,12 +171,12 @@
   box-shadow: 0 0.5rem 1rem rgba(0,0,0,.2);
 }
 
-.stat-card h2 {
+.message-page .stat-card h2 {
   font-size: 2rem;
   margin-bottom: 0.5rem;
 }
 
-.stat-card h3 {
+.message-page .stat-card h3 {
   font-family: "Bebas Neue", sans-serif;
   font-size: 2rem;
   color: #ef9011;
@@ -267,17 +184,7 @@
   margin-bottom: 0.25rem;
 }
 
-.stat-card p {
+.message-page .stat-card p {
   color: #78879e;
   font-size: 1.1rem;
-}
-
-.nav-btn-secondary {
-  background: transparent;
-  border: 1px solid #ef9011;
-  color: #ef9011;
-}
-
-.nav-btn-secondary:hover {
-  background: rgba(239, 144, 17, 0.1);
 }

@@ -8,86 +8,6 @@
   font-family: 'Montserrat', sans-serif;
 }
 
-/* ── Nav ── */
-.resources-nav {
-  position: sticky;
-  top: 0;
-  z-index: 40;
-  background: rgba(15, 19, 25, 0.85);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid #222b36;
-}
-
-.resources-nav-inner {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 0 2rem;
-  height: 64px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.nav-menu {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #cbd5e1;
-  cursor: default;
-  letter-spacing: 0.02em;
-}
-
-.nav-logo {
-  font-family: 'Montserrat', sans-serif;
-  font-size: 0.9rem;
-  font-weight: 700;
-  color: #fff;
-  letter-spacing: 0.05em;
-}
-
-.nav-links {
-  display: flex;
-  align-items: center;
-  gap: 2rem;
-}
-
-.nav-link {
-  background: none;
-  border: none;
-  font-family: 'Montserrat', sans-serif;
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: #78879e;
-  text-decoration: none;
-  cursor: pointer;
-  transition: color 0.15s;
-}
-
-.nav-link:hover { color: #fff; }
-
-.nav-link.active {
-  color: #fff;
-  border-bottom: 2px solid #ef9011;
-  padding-bottom: 2px;
-}
-
-.nav-btn {
-  background: #ef9011;
-  color: #fff;
-  border: none;
-  border-radius: 99px;
-  padding: 0.45rem 1.1rem;
-  font-size: 0.78rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: background 0.15s;
-  font-family: 'Montserrat', sans-serif;
-  letter-spacing: 0.02em;
-}
-
-.nav-btn:hover { background: #d97c0d; }
-
-/* ── Hero ── */
 .resources-hero {
   max-width: 1100px;
   margin: 0 auto;
@@ -210,33 +130,6 @@
 }
 
 .resource-card.accent .card-desc { color: rgba(255,255,255,0.65); }
-
-/* ── Footer ── */
-.resources-footer {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 1.5rem 2rem 3rem;
-  border-top: 1px solid #222b36;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 1rem;
-}
-
-.footer-logo {
-  font-family: 'Montserrat', sans-serif;
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: #fff;
-}
-
-.footer-note {
-  font-size: 0.75rem;
-  color: #78879e;
-}
-
-.footer-note strong { color: #cbd5e1; }
 
 /* ── Modal ── */
 .modal-overlay {
@@ -379,13 +272,3 @@
 }
 
 .modal-x:hover { color: #fff; }
-
-.nav-btn-secondary {
-  background: transparent;
-  border: 1px solid #ef9011;
-  color: #ef9011;
-}
-
-.nav-btn-secondary:hover {
-  background: rgba(239, 144, 17, 0.1);
-}

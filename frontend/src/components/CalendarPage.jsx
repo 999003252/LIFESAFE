@@ -1,6 +1,5 @@
 import '../pages/Calendar.css'
 import { useState } from 'react'
-import Sidebar from './Sidebar'
 
 const CalendarPage = () => {
     const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -63,8 +62,6 @@ const CalendarPage = () => {
 
     return (
     <div className="calendar-page-wrapper">
-        <Sidebar activeItem="Calendar" />
-        <main className="calendar-main">
         <div className="calendar-page-center">
         <div className="calendar-page">
             <div className="calendar">
@@ -194,7 +191,6 @@ const CalendarPage = () => {
             </div>
         </div>
         </div>
-        </main>
     </div>
   )
 }
