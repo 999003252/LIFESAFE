@@ -1,5 +1,9 @@
 import '../pages/Calendar.css'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { getAuth } from '../auth'
+import { fetchEntries } from '../api/entries'
+
+const MS_PER_WEEK = 7 * 24 * 60 * 60 * 1000
 
 const CalendarPage = () => {
     const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -15,6 +19,22 @@ const CalendarPage = () => {
     const[showEventPopup, setShowEventPopup] = useState(false)
     const [events, setEvents] = useState([])
     const [eventText, setEventText] = useState('')
+    const [journalEntries, setJournalEntries] = useState([])
+
+    useEffect(() => {
+        fetchEntries(getAuth())
+            .then(setJournalEntries)
+            .catch(() => setJournalEntries([]))
+    }, [])
+
+    const entriesLoggedCount = journalEntries.length
+
+    const weeksTracking = journalEntries.length === 0
+        ? 0
+        : Math.floor(
+            (currentDate - Math.min(...journalEntries.map((entry) => new Date(entry.timestamp))))
+            / MS_PER_WEEK
+        )
 
     const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate()
     const firstDayOfMonth = new Date(currentYear, currentMonth, 1).getDay()
@@ -165,29 +185,39 @@ const CalendarPage = () => {
                 <div className="tracking-stats">
         <div className="stat-card">
             <h2>🔥</h2>
-            <h3>7 Days</h3>
-            <p>Tracked Consecutively</p>
+            <h3>{entriesLoggedCount}</h3>
+            <p>Entries Logged</p>
         </div>
 
         <div className="stat-card">
             <h2>📅</h2>
-            <h3>3 Weeks</h3>
+            <h3>{weeksTracking} Weeks</h3>
             <p>Total Tracking</p>
         </div>
     </div>
-               {/*}
-               <div className="event">
-                <div className="event-date-wrapper">
-                    <div className="event-date">May 15, 2024</div>
-                    <div className="event-time">10:00</div>
-                </div>
-                <div className="event-text">Event Sample</div>
-                <div className="event-buttons">
-                    <i className="material-symbols-rounded">edit</i>
-                    <i className="material-symbols-rounded">3p</i>
-                </div>
+               <div className="journal-entries">
+                   {journalEntries.length > 0 && (
+                       <h3 className="journal-entries-heading">Journal Entries</h3>
+                   )}
+                   {journalEntries.map((entry) => {
+                       const entryDate = new Date(entry.timestamp)
+                       return (
+                           <div className="event" key={entry.entryId}>
+                               <div className="event-date-wrapper">
+                                   <div className="event-date">
+                                       {entryDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                                   </div>
+                                   <div className="event-time">
+                                       {entryDate.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}
+                                   </div>
+                               </div>
+                               <div className="event-text">
+                                   <strong>{entry.moodLabel}</strong> — {entry.answers[0]}
+                               </div>
+                           </div>
+                       )
+                   })}
                </div>
-               */}
             </div>
         </div>
         </div>

@@ -1,5 +1,7 @@
 import './Entry.css'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { getAuth } from '../auth'
+import { createEntry, fetchEntries } from '../api/entries'
 
 const moods = [
   { id: 'veryHappy', icon: 'sentiment_very_satisfied', label: 'Very Happy' },
@@ -37,18 +39,41 @@ const moodPrompts = {
   ],
 }
 
+const toDisplayEntry = (item) => {
+  const prompts = moodPrompts[item.mood] || []
+  const text = prompts
+    .map((prompt, i) => `${prompt}\n${(item.answers[i] || '').trim() || '(no answer)'}`)
+    .join('\n\n')
+
+  return {
+    entryId: item.entryId,
+    mood: { icon: item.moodIcon, label: item.moodLabel },
+    date: new Date(item.timestamp),
+    text,
+  }
+}
+
 const Entry = () => {
   const [selectedMood, setSelectedMood] = useState(null)
   const [step, setStep] = useState(0)
   const [answers, setAnswers] = useState(['', '', ''])
   const [entries, setEntries] = useState([])
   const [savedConfirmation, setSavedConfirmation] = useState('')
+  const [errorMessage, setErrorMessage] = useState('')
+
+  useEffect(() => {
+    const userId = getAuth()
+    fetchEntries(userId)
+      .then((items) => setEntries(items.map(toDisplayEntry)))
+      .catch(() => setErrorMessage('Could not load past entries.'))
+  }, [])
 
   const handleMoodSelect = (moodId) => {
     setSelectedMood(moodId)
     setStep(0)
     setAnswers(['', '', ''])
     setSavedConfirmation('')
+    setErrorMessage('')
   }
 
   const handleAnswerChange = (text) => {
@@ -69,21 +94,27 @@ const Entry = () => {
     }
   }
 
-  const handleSaveEntry = () => {
+  const handleSaveEntry = async () => {
     const moodInfo = moods.find((m) => m.id === selectedMood)
-    const prompts = moodPrompts[selectedMood]
-    const combinedText = prompts
-      .map((prompt, i) => `${prompt}\n${answers[i].trim() || '(no answer)'}`)
-      .join('\n\n')
 
-    const newEntry = {
-      mood: moodInfo,
-      date: new Date(),
-      text: combinedText,
+    const payload = {
+      userId: getAuth(),
+      mood: selectedMood,
+      moodLabel: moodInfo.label,
+      moodIcon: moodInfo.icon,
+      answers,
     }
 
-    setEntries([newEntry, ...entries])
-    setSavedConfirmation('Entry saved!')
+    try {
+      const saved = await createEntry(payload)
+      setEntries([toDisplayEntry(saved), ...entries])
+      setSavedConfirmation('Entry saved!')
+      setErrorMessage('')
+    } catch {
+      setErrorMessage('Could not save entry. Please try again.')
+      return
+    }
+
     setSelectedMood(null)
     setStep(0)
     setAnswers(['', '', ''])
@@ -98,6 +129,10 @@ const Entry = () => {
 
         {savedConfirmation && (
           <div className="save-confirmation">{savedConfirmation}</div>
+        )}
+
+        {errorMessage && (
+          <div className="save-confirmation error">{errorMessage}</div>
         )}
 
         {!selectedMood && (
@@ -169,7 +204,7 @@ const Entry = () => {
           <div className="entry-history">
             <h2 className="section-label">Past Entries</h2>
             {entries.map((entry, idx) => (
-              <div className="history-card" key={idx}>
+              <div className="history-card" key={entry.entryId || idx}>
                 <div className="history-card-header">
                   <i className="material-symbols-rounded">{entry.mood.icon}</i>
                   <span className="history-mood-label">{entry.mood.label}</span>
