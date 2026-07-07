@@ -130,11 +130,11 @@ body {
 }
 
 .login-form .input-wrapper .input-field::placeholder {
-  color: #fff;
+  color: #78879e;
 }
 
 .login-form .input-wrapper i {
-  color: #fff;
+  color: #78879e;
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
