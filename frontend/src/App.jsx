@@ -7,6 +7,7 @@ import Resources from './pages/Resources'
 import Message from './pages/message'
 import Entry from './pages/Entry'
 import CreateAccount from "./pages/CreateAccount";
+import FriendsPage from "./pages/FriendsPage";
 
 const App = () => {
   return (
@@ -46,6 +47,15 @@ const App = () => {
         element={
           <ProtectedLayout>
             <Entry />
+          </ProtectedLayout>
+        }
+      />
+
+      <Route
+        path="/friends"
+        element={
+          <ProtectedLayout>
+            <FriendsPage />
           </ProtectedLayout>
         }
       />
