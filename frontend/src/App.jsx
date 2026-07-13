@@ -7,6 +7,7 @@ import CalendarPage from './components/CalendarPage'
 import Resources from './pages/Resources'
 import Message from './pages/message'
 import Entry from './pages/Entry'
+import CreateAccount from "./pages/CreateAccount";
 
 const App = () => {
   return (
@@ -53,6 +54,7 @@ const App = () => {
           </ProtectedRoute>
         }
       />
+      <Route path="/create-account" element={<CreateAccount />} />
     </Routes>
   )
 }

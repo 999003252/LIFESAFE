@@ -1,0 +1,142 @@
+.create-account-page {
+    min-height: 100vh;
+    background-color: #0f1319;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+}
+
+
+.create-account-card {
+    background-color: #171d26;
+    width: 450px;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0px 8px 25px rgba(0,0,0,0.35);
+}
+
+
+.create-account-card h1 {
+    text-align: center;
+    color: white;
+    margin-bottom: 8px;
+}
+
+
+.subtitle {
+    text-align: center;
+    color: #9ca3af;
+    margin-bottom: 30px;
+}
+
+
+/* Profile Upload */
+
+.profile-upload {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+
+.profile-upload input {
+    display: none;
+}
+
+
+.profile-placeholder,
+.profile-preview {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+}
+
+
+.profile-placeholder {
+    background-color: #252d38;
+    color: #d97c0d;
+    border: 2px dashed #d97c0d;
+    font-size: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+
+.profile-preview {
+    object-fit: cover;
+    cursor: pointer;
+    border: 2px solid #d97c0d;
+}
+
+
+.profile-upload p {
+    color: #9ca3af;
+    font-size: 14px;
+}
+
+
+/* Form */
+
+.name-row {
+    display: flex;
+    gap: 15px;
+}
+
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 18px;
+    flex: 1;
+}
+
+
+.input-group label {
+    margin-bottom: 6px;
+    font-size: 14px;
+    color: #d1d5db;
+}
+
+
+.input-group input {
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid #374151;
+    background-color: #0f1319;
+    color: white;
+    font-size: 15px;
+}
+
+
+.input-group input::placeholder {
+    color: #6b7280;
+}
+
+
+.input-group input:focus {
+    outline: none;
+    border-color: #d97c0d;
+}
+
+
+/* Button */
+
+.create-button {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 12px;
+    background-color: #d97c0d;
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+
+.create-button:hover {
+    background-color: #b86609;
+}
