@@ -14,7 +14,7 @@ export default function Sidebar({ activeItem = 'Calendar' }) {
   const menuItems = [
     { name: 'Calendar', icon: 'calendar_month', path: '/' },
     { name: 'Journal', icon: 'edit_note', path: '/entry' },
-    { name: 'Message', icon: 'chat', path: '/message' },
+    { name: 'Message', icon: 'chat', path: '/friends' },
     { name: 'Resources', icon: 'menu_book', path: '/resources' },
   ]
 
