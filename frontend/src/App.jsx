@@ -1,7 +1,6 @@
 import { Routes, Route } from 'react-router-dom'
 import Login from './pages/Login'
 import Otp from './pages/Otp'
-import ProtectedRoute from './components/ProtectedRoute'
 import ProtectedLayout from './components/ProtectedLayout'
 import CalendarPage from './components/CalendarPage'
 import Resources from './pages/Resources'
@@ -14,47 +13,45 @@ const App = () => {
     <Routes>
       <Route path="/login" element={<Login />} />
       <Route path="/otp" element={<Otp />} />
+
       <Route
         path="/"
         element={
-         // <ProtectedRoute> 
-            <ProtectedLayout>
-              <CalendarPage />
-            </ProtectedLayout>
-         // </ProtectedRoute>
+          <ProtectedLayout>
+            <CalendarPage />
+          </ProtectedLayout>
         }
       />
+
       <Route
         path="/resources"
         element={
-          <ProtectedRoute>
-            <ProtectedLayout>
-              <Resources />
-            </ProtectedLayout>
-          </ProtectedRoute>
+          <ProtectedLayout>
+            <Resources />
+          </ProtectedLayout>
         }
       />
+
       <Route
         path="/message"
         element={
-          <ProtectedRoute>
-            <ProtectedLayout>
-              <Message />
-            </ProtectedLayout>
-          </ProtectedRoute>
+          <ProtectedLayout>
+            <Message />
+          </ProtectedLayout>
         }
       />
+
       <Route
         path="/entry"
         element={
-          <ProtectedRoute>
-            <ProtectedLayout>
-              <Entry />
-            </ProtectedLayout>
-          </ProtectedRoute>
+          <ProtectedLayout>
+            <Entry />
+          </ProtectedLayout>
         }
       />
+
       <Route path="/create-account" element={<CreateAccount />} />
+
     </Routes>
   )
 }
