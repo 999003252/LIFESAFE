@@ -17,11 +17,11 @@ const App = () => {
       <Route
         path="/"
         element={
-          <ProtectedRoute>
+         // <ProtectedRoute> 
             <ProtectedLayout>
               <CalendarPage />
             </ProtectedLayout>
-          </ProtectedRoute>
+         // </ProtectedRoute>
         }
       />
       <Route

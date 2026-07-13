@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import InputField from '../components/InputField'
 
 const Login = () => {
@@ -21,8 +21,8 @@ const Login = () => {
     <div className="auth-page">
       <div className="login-container">
         <h1 className="brand-wordmark">lifesafe</h1>
-        <h2 className="form-title">Create an account</h2>
-        <p className="form-subtitle">Enter your email to sign up for this app</p>
+        <h2 className="form-title">Login to your account</h2>
+        <p className="form-subtitle">Enter your email to login</p>
         <form className="login-form" onSubmit={handleSubmit}>
           <InputField
             type="email"
@@ -36,6 +36,12 @@ const Login = () => {
             Continue
           </button>
         </form>
+
+        <p className="create-account-link">
+          Don't have an account?{" "}
+          <Link to="/create-account">Create one here</Link>
+        </p>    
+
         <p className="signup-text fine-print">
           By clicking continue, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
         </p>

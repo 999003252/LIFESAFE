@@ -1,7 +1,10 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "../pages/CreateAccount.css";
 
 function CreateAccount() {
+  const navigate = useNavigate();
+
   const [profileImage, setProfileImage] = useState(null);
 
   const [email, setEmail] = useState("");
@@ -33,25 +36,21 @@ function CreateAccount() {
 
     // Frontend only for now
     console.log("Account information submitted");
-    alert("Account created successfully!");
+
+    navigate("/");
   };
 
   return (
     <div className="create-account-page">
-
       <div className="create-account-card">
-
         <h1>Create Account</h1>
 
         <p className="subtitle">
           Create your profile to start your wellness journey.
         </p>
 
-
         <div className="profile-upload">
-
           <label htmlFor="profile-picture">
-
             {profileImage ? (
               <img
                 src={profileImage}
@@ -59,13 +58,9 @@ function CreateAccount() {
                 className="profile-preview"
               />
             ) : (
-              <div className="profile-placeholder">
-                +
-              </div>
+              <div className="profile-placeholder">+</div>
             )}
-
           </label>
-
 
           <input
             id="profile-picture"
@@ -75,41 +70,22 @@ function CreateAccount() {
           />
 
           <p>Upload Profile Picture</p>
-
         </div>
 
-
         <form onSubmit={handleSubmit}>
-
           <div className="name-row">
-
             <div className="input-group">
               <label>First Name</label>
-
-              <input
-                type="text"
-                placeholder="First name"
-              />
-
+              <input type="text" placeholder="First name" />
             </div>
-
 
             <div className="input-group">
               <label>Last Name</label>
-
-              <input
-                type="text"
-                placeholder="Last name"
-              />
-
+              <input type="text" placeholder="Last name" />
             </div>
-
           </div>
 
-
-
           <div className="input-group">
-
             <label>Email</label>
 
             <input
@@ -118,13 +94,9 @@ function CreateAccount() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
-
           </div>
 
-
-
           <div className="input-group">
-
             <label>Confirm Email</label>
 
             <input
@@ -133,13 +105,9 @@ function CreateAccount() {
               value={confirmEmail}
               onChange={(e) => setConfirmEmail(e.target.value)}
             />
-
           </div>
 
-
-
           <div className="input-group">
-
             <label>Password</label>
 
             <input
@@ -148,13 +116,9 @@ function CreateAccount() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
-
           </div>
 
-
-
           <div className="input-group">
-
             <label>Confirm Password</label>
 
             <input
@@ -163,20 +127,13 @@ function CreateAccount() {
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
             />
-
           </div>
-
-
 
           <button className="create-button">
             Create Account
           </button>
-
-
         </form>
-
       </div>
-
     </div>
   );
 }
