@@ -1,9 +1,17 @@
 import '../pages/Calendar.css'
 import { useEffect, useState } from 'react'
 import { getAuth } from '../auth'
-import { fetchEntries } from '../api/entries'
+import { fetchEntries, createEntry } from '../api/entries'
 
 const MS_PER_WEEK = 7 * 24 * 60 * 60 * 1000
+
+const moodMap = {
+    5: { id: 'veryHappy', label: 'Very Happy', icon: 'sentiment_very_satisfied' },
+    4: { id: 'happy', label: 'Happy', icon: 'sentiment_satisfied' },
+    3: { id: 'neutral', label: 'Neutral', icon: 'sentiment_neutral' },
+    2: { id: 'sad', label: 'Sad', icon: 'sentiment_dissatisfied' },
+    1: { id: 'verySad', label: 'Very Sad', icon: 'sentiment_very_dissatisfied' },
+}
 
 const CalendarPage = () => {
     const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -17,9 +25,9 @@ const CalendarPage = () => {
     const [currentYear, setCurrentYear] = useState(currentDate.getFullYear())
     const [selectedDate, setSelectedDate] = useState(currentDate)
     const[showEventPopup, setShowEventPopup] = useState(false)
-    const [events, setEvents] = useState([])
     const [eventText, setEventText] = useState('')
     const [journalEntries, setJournalEntries] = useState([])
+    const [saveError, setSaveError] = useState('')
 
     useEffect(() => {
         fetchEntries(getAuth())
@@ -68,13 +76,24 @@ const CalendarPage = () => {
         ) 
     }
 
-    const handleEventSubmit = () => {
-        const newEvent = {
-            date: selectedDate,
-            mood: mood,
-            text: eventText
+    const handleEventSubmit = async () => {
+        const moodInfo = moodMap[mood]
+
+        try {
+            const saved = await createEntry({
+                userId: getAuth(),
+                mood: moodInfo.id,
+                moodLabel: moodInfo.label,
+                moodIcon: moodInfo.icon,
+                answers: [eventText],
+            })
+            setJournalEntries([saved, ...journalEntries])
+            setSaveError('')
+        } catch {
+            setSaveError('Could not save entry. Please try again.')
+            return
         }
-        setEvents([...events, newEvent])
+
         setEventText('')
         setMood(3)
         setShowEventPopup(false)
@@ -171,6 +190,8 @@ const CalendarPage = () => {
             }
         }}
     ></textarea>
+
+    {saveError && <div className="save-error">{saveError}</div>}
 
     <button
         className="event-popup-btn"
