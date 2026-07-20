@@ -1,6 +1,6 @@
 .create-account-page {
     min-height: 100vh;
-    background-color: #0f1319;
+    background-color: #1e242d;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -9,11 +9,12 @@
 
 
 .create-account-card {
-    background-color: #171d26;
+    background-color: #161b22;
     width: 450px;
     padding: 40px;
     border-radius: 20px;
-    box-shadow: 0px 8px 25px rgba(0,0,0,0.35);
+    border: 1px solid #222b36;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 }
 
 .back-button {
@@ -58,8 +59,15 @@
 /* Profile Upload */
 
 .profile-upload {
-    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     margin-bottom: 25px;
+}
+
+
+.profile-upload label {
+    display: block;
 }
 
 
@@ -105,7 +113,13 @@
 
 .name-row {
     display: flex;
+    justify-content: center;
     gap: 15px;
+}
+
+
+.name-row .input-group label {
+    text-align: center;
 }
 
 
