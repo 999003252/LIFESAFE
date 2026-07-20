@@ -13,6 +13,9 @@ function CreateAccount() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState(""); 
+
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
 
@@ -21,7 +24,7 @@ function CreateAccount() {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (email !== confirmEmail) {
@@ -34,10 +37,37 @@ function CreateAccount() {
       return;
     }
 
-    // Frontend only for now
-    console.log("Account information submitted");
-
-    navigate("/");
+    try {
+      const response = await fetch(
+        "https://hsvynbsv5e.execute-api.us-east-1.amazonaws.com/register",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            firstName,
+            lastName,
+            email,
+            password,
+          }),
+        }
+      );
+    
+      const data = await response.json();
+    
+      if (!response.ok) {
+        alert(data);
+        return;
+      }
+    
+      alert("Account created successfully!");
+      navigate("/");
+    
+    } catch (error) {
+      console.error("Signup error:", error);
+      alert("Something went wrong. Please try again.");
+    }
   };
 
   return (
@@ -76,12 +106,22 @@ function CreateAccount() {
           <div className="name-row">
             <div className="input-group">
               <label>First Name</label>
-              <input type="text" placeholder="First name" />
+              <input
+                type="text"
+                placeholder="First name"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+              />
             </div>
 
             <div className="input-group">
               <label>Last Name</label>
-              <input type="text" placeholder="Last name" />
+              <input
+                type="text"
+                placeholder="Last name"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+              />
             </div>
           </div>
 
