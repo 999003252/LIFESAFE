@@ -1,9 +1,24 @@
+from contextlib import asynccontextmanager
+import logging
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from database import ensure_journal_entries_table
 from routers import entries
 
-app = FastAPI(title="Lifesafe API")
+logger = logging.getLogger("uvicorn.error")
+
+
+@asynccontextmanager
+async def lifespan(_app: FastAPI):
+    """Provision required cloud resources before accepting requests."""
+    table = ensure_journal_entries_table()
+    logger.info("DynamoDB table '%s' is ready.", table.name)
+    yield
+
+
+app = FastAPI(title="Lifesafe API", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
