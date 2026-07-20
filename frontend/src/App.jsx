@@ -8,12 +8,16 @@ import Message from './pages/message'
 import Entry from './pages/Entry'
 import CreateAccount from "./pages/CreateAccount";
 import FriendsPage from "./pages/FriendsPage";
+import TermsOfService from './pages/TermsOfService'
+import PrivacyPolicy from './pages/PrivacyPolicy'
 
 const App = () => {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
       <Route path="/otp" element={<Otp />} />
+      <Route path="/terms" element={<TermsOfService />} />
+      <Route path="/privacy" element={<PrivacyPolicy />} />
 
       <Route
         path="/"

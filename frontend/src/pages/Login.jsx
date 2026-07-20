@@ -1,11 +1,12 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import InputField from '../components/InputField'
 
 const Login = () => {
   const [email, setEmail] = useState('')
   const [error, setError] = useState('')
   const navigate = useNavigate()
+  const location = useLocation()
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -42,7 +43,10 @@ const Login = () => {
         </p>
 
         <p className="signup-text fine-print">
-          By clicking continue, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+          By clicking continue, you agree to our{' '}
+          <Link to="/terms" state={{ from: location.pathname }}>Terms of Service</Link>{' '}
+          and{' '}
+          <Link to="/privacy" state={{ from: location.pathname }}>Privacy Policy</Link>
         </p>
       </div>
     </div>
