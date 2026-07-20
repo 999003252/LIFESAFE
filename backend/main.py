@@ -5,7 +5,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from database import ensure_journal_entries_table
-from routers import entries
+from routers import entries, profile_pictures
 
 logger = logging.getLogger("uvicorn.error")
 
@@ -29,6 +29,7 @@ app.add_middleware(
 )
 
 app.include_router(entries.router)
+app.include_router(profile_pictures.router)
 
 
 @app.get("/")

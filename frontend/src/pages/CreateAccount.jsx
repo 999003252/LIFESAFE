@@ -2,10 +2,13 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../pages/CreateAccount.css";
 
+const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8000";
+
 function CreateAccount() {
   const navigate = useNavigate();
 
   const [profileImage, setProfileImage] = useState(null);
+  const [profileImageFile, setProfileImageFile] = useState(null);
 
   const [email, setEmail] = useState("");
   const [confirmEmail, setConfirmEmail] = useState("");
@@ -21,6 +24,7 @@ function CreateAccount() {
 
     if (file) {
       setProfileImage(URL.createObjectURL(file));
+      setProfileImageFile(file);
     }
   };
 
@@ -61,8 +65,23 @@ function CreateAccount() {
         return;
       }
     
+      if (profileImageFile) {
+        const imageData = new FormData();
+        imageData.append("email", email);
+        imageData.append("image", profileImageFile);
+
+        const imageResponse = await fetch(`${API_BASE}/profile-pictures`, {
+          method: "POST",
+          body: imageData,
+        });
+
+        if (!imageResponse.ok) {
+          throw new Error("Failed to upload profile picture");
+        }
+      }
+
       alert("Account created successfully!");
-      navigate("/");
+      navigate("/login");
     
     } catch (error) {
       console.error("Signup error:", error);

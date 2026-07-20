@@ -8,6 +8,20 @@ load_dotenv()
 AWS_REGION = os.environ.get("AWS_REGION", "us-east-1")
 
 dynamodb = boto3.resource("dynamodb", region_name=AWS_REGION)
+s3 = boto3.client("s3", region_name=AWS_REGION)
+PROFILE_PICTURES_BUCKET = "lifesafe-profile-pictures-team6"
+
+
+def ensure_profile_pictures_bucket():
+    try:
+        s3.head_bucket(Bucket=PROFILE_PICTURES_BUCKET)
+    except ClientError:
+        create_args = {"Bucket": PROFILE_PICTURES_BUCKET}
+        if AWS_REGION != "us-east-1":
+            create_args["CreateBucketConfiguration"] = {
+                "LocationConstraint": AWS_REGION
+            }
+        s3.create_bucket(**create_args)
 
 
 def get_table(table_name_env_var: str, default_name: str):
