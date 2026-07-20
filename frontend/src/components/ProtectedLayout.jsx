@@ -1,5 +1,6 @@
 import { useLocation } from 'react-router-dom'
 import Sidebar from './Sidebar'
+import ProtectedRoute from './ProtectedRoute'
 import './ProtectedLayout.css'
 
 const activeItems = {
@@ -14,10 +15,12 @@ const ProtectedLayout = ({ children }) => {
   const activeItem = activeItems[location.pathname] || 'Calendar'
 
   return (
-    <div className="protected-layout">
-      <Sidebar activeItem={activeItem} />
-      <main className="protected-content">{children}</main>
-    </div>
+    <ProtectedRoute>
+      <div className="protected-layout">
+        <Sidebar activeItem={activeItem} />
+        <main className="protected-content">{children}</main>
+      </div>
+    </ProtectedRoute>
   )
 }
 

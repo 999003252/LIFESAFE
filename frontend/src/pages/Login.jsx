@@ -38,9 +38,8 @@ const Login = () => {
         </form>
 
         <p className="create-account-link">
-          Don't have an account?{" "}
-          <Link to="/create-account">Create one here</Link>
-        </p>    
+          New to lifesafe? <Link to="/create-account">Create an account</Link>
+        </p>
 
         <p className="signup-text fine-print">
           By clicking continue, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>

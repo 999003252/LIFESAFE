@@ -73,6 +73,15 @@ function CreateAccount() {
   return (
     <div className="create-account-page">
       <div className="create-account-card">
+        <button
+          type="button"
+          className="back-button"
+          onClick={() => navigate("/login")}
+        >
+          <span aria-hidden="true">←</span>
+          Back to Login
+        </button>
+
         <h1>Create Account</h1>
 
         <p className="subtitle">

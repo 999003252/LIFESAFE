@@ -189,6 +189,22 @@ body {
   margin: 1.75rem 0 0.31rem;
 }
 
+.login-container .create-account-link {
+  margin: 1.25rem 0 0;
+  color: #78879e;
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+.login-container .create-account-link a {
+  color: #ef9011;
+  font-weight: 600;
+}
+
+.login-container .create-account-link a:hover {
+  color: #f6a63b;
+}
+
 .login-container a {
   color: #fff;
   font-weight: 500;

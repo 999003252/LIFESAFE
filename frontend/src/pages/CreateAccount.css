@@ -16,6 +16,30 @@
     box-shadow: 0px 8px 25px rgba(0,0,0,0.35);
 }
 
+.back-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0;
+    margin-bottom: 20px;
+    border: none;
+    background: transparent;
+    color: #d97c0d;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.back-button:hover {
+    color: #f0a03d;
+}
+
+.back-button:focus-visible {
+    outline: 2px solid #d97c0d;
+    outline-offset: 5px;
+    border-radius: 2px;
+}
+
 
 .create-account-card h1 {
     text-align: center;
