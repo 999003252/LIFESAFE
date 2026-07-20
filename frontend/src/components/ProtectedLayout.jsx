@@ -7,6 +7,7 @@ const activeItems = {
   '/': 'Calendar',
   '/entry': 'Journal',
   '/message': 'Message',
+  '/friends': 'Message',
   '/resources': 'Resources',
 }
 
