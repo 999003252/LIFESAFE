@@ -21,44 +21,16 @@ Parameters:
   ConnectionsTableName:
     Type: String
     Default: LifesafeWebSocketConnections
+  ExistingLambdaRoleArn:
+    Type: String
 
 Resources:
-  RealtimeRole:
-    Type: AWS::IAM::Role
-    Properties:
-      AssumeRolePolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service: lambda.amazonaws.com
-            Action: sts:AssumeRole
-      ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
-      Policies:
-        - PolicyName: RealtimeData
-          PolicyDocument:
-            Version: '2012-10-17'
-            Statement:
-              - Effect: Allow
-                Action:
-                  - dynamodb:DeleteItem
-                  - dynamodb:GetItem
-                  - dynamodb:PutItem
-                  - dynamodb:Query
-                  - dynamodb:UpdateItem
-                Resource:
-                  - !Sub 'arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${FriendshipsTableName}'
-                  - !Sub 'arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${MessagesTableName}'
-                  - !Sub 'arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${ConnectionsTableName}'
-                  - !Sub 'arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${ConnectionsTableName}/index/UserConnectionsIndex'
-
   RealtimeFunction:
     Type: AWS::Lambda::Function
     Properties:
       Runtime: python3.12
       Handler: handlers.send_message
-      Role: !GetAtt RealtimeRole.Arn
+      Role: !Ref ExistingLambdaRoleArn
       Timeout: 15
       Code:
         S3Bucket: !Ref ArtifactBucket
@@ -74,7 +46,7 @@ Resources:
     Properties:
       Runtime: python3.12
       Handler: handlers.connect
-      Role: !GetAtt RealtimeRole.Arn
+      Role: !Ref ExistingLambdaRoleArn
       Timeout: 15
       Code:
         S3Bucket: !Ref ArtifactBucket
@@ -90,7 +62,7 @@ Resources:
     Properties:
       Runtime: python3.12
       Handler: handlers.disconnect
-      Role: !GetAtt RealtimeRole.Arn
+      Role: !Ref ExistingLambdaRoleArn
       Timeout: 15
       Code:
         S3Bucket: !Ref ArtifactBucket
@@ -180,18 +152,6 @@ Resources:
       Action: lambda:InvokeFunction
       FunctionName: !Ref RealtimeFunction
       Principal: apigateway.amazonaws.com
-
-  ManageConnectionsPolicy:
-    Type: AWS::IAM::Policy
-    Properties:
-      PolicyName: ManageWebSocketConnections
-      Roles: [!Ref RealtimeRole]
-      PolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          - Effect: Allow
-            Action: execute-api:ManageConnections
-            Resource: !Sub 'arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${WebSocketApi}/*'
 
 Outputs:
   WebSocketUrl:

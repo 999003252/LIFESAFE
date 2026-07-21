@@ -18,6 +18,18 @@ HANDLER_PATH = BACKEND_DIR / "realtime" / "handlers.py"
 
 load_dotenv(ENV_PATH)
 
+for environment_name, lowercase_name in {
+    "AWS_ACCESS_KEY_ID": "aws_access_key_id",
+    "AWS_SECRET_ACCESS_KEY": "aws_secret_access_key",
+    "AWS_SESSION_TOKEN": "aws_session_token",
+    "AWS_REGION": "aws_region",
+}.items():
+    if not os.environ.get(environment_name) and os.environ.get(lowercase_name):
+        os.environ[environment_name] = os.environ[lowercase_name]
+
+if not os.environ.get("AWS_REGION") and os.environ.get("region"):
+    os.environ["AWS_REGION"] = os.environ["region"]
+
 STACK_NAME = os.environ.get("LIFESAFE_REALTIME_STACK", "lifesafe-realtime")
 REGION = os.environ.get("AWS_REGION", "us-east-1")
 
@@ -58,10 +70,11 @@ def upload_handler(s3, bucket: str) -> str:
     return key
 
 
-def stack_parameters(bucket: str, artifact_key: str) -> list[dict]:
+def stack_parameters(bucket: str, artifact_key: str, lambda_role_arn: str) -> list[dict]:
     return [
         {"ParameterKey": "ArtifactBucket", "ParameterValue": bucket},
         {"ParameterKey": "ArtifactKey", "ParameterValue": artifact_key},
+        {"ParameterKey": "ExistingLambdaRoleArn", "ParameterValue": lambda_role_arn},
         {
             "ParameterKey": "UserProfilesTableName",
             "ParameterValue": table_name("USER_PROFILES_TABLE_NAME", "LifesafeUserProfiles"),
@@ -87,20 +100,30 @@ def stack_parameters(bucket: str, artifact_key: str) -> list[dict]:
     ]
 
 
+def create_stack(cloudformation, template_body: str, parameters: list[dict]):
+    cloudformation.create_stack(
+        StackName=STACK_NAME,
+        TemplateBody=template_body,
+        Parameters=parameters,
+        Capabilities=["CAPABILITY_IAM"],
+    )
+    cloudformation.get_waiter("stack_create_complete").wait(StackName=STACK_NAME)
+
+
 def deploy_stack(cloudformation, parameters: list[dict]):
     template_body = TEMPLATE_PATH.read_text()
     try:
-        cloudformation.describe_stacks(StackName=STACK_NAME)
+        stack = cloudformation.describe_stacks(StackName=STACK_NAME)["Stacks"][0]
     except ClientError as error:
         if error.response.get("Error", {}).get("Code") != "ValidationError":
             raise
-        cloudformation.create_stack(
-            StackName=STACK_NAME,
-            TemplateBody=template_body,
-            Parameters=parameters,
-            Capabilities=["CAPABILITY_IAM"],
-        )
-        cloudformation.get_waiter("stack_create_complete").wait(StackName=STACK_NAME)
+        create_stack(cloudformation, template_body, parameters)
+        return
+
+    if stack["StackStatus"] == "ROLLBACK_COMPLETE":
+        cloudformation.delete_stack(StackName=STACK_NAME)
+        cloudformation.get_waiter("stack_delete_complete").wait(StackName=STACK_NAME)
+        create_stack(cloudformation, template_body, parameters)
         return
 
     try:
@@ -128,9 +151,11 @@ def update_env(values: dict[str, str]):
             updated.append(line)
     updated.extend(f"{name}={value}" for name, value in pending.items())
     ENV_PATH.write_text("\n".join(updated) + "\n")
+    os.environ.update(values)
 
 
-def main():
+def setup_realtime():
+    """Create or update the WebSocket stack and return its generated settings."""
     session = boto3.Session(region_name=REGION)
     s3 = session.client("s3")
     cloudformation = session.client("cloudformation")
@@ -139,26 +164,43 @@ def main():
         bucket = deployment_bucket(session)
         ensure_bucket(s3, bucket)
         artifact_key = upload_handler(s3, bucket)
-        deploy_stack(cloudformation, stack_parameters(bucket, artifact_key))
+        account_id = session.client("sts").get_caller_identity()["Account"]
+        lambda_role_arn = os.environ.get(
+            "LIFESAFE_LAMBDA_ROLE_ARN", f"arn:aws:iam::{account_id}:role/LabRole"
+        )
+        deploy_stack(
+            cloudformation,
+            stack_parameters(bucket, artifact_key, lambda_role_arn),
+        )
         outputs = cloudformation.describe_stacks(StackName=STACK_NAME)["Stacks"][0][
             "Outputs"
         ]
     except ClientError as error:
-        print(f"AWS setup failed: {error}", file=sys.stderr)
-        print("Refresh credentials and verify the required AWS permissions, then run again.", file=sys.stderr)
-        raise SystemExit(1) from error
+        raise RuntimeError(
+            "AWS setup failed. Refresh credentials and verify S3, CloudFormation, "
+            "DynamoDB, Lambda, API Gateway, and IAM permissions."
+        ) from error
 
     values = {output["OutputKey"]: output["OutputValue"] for output in outputs}
-    update_env(
-        {
-            "WEBSOCKET_URL": values["WebSocketUrl"],
-            "USER_PROFILES_TABLE_NAME": values["UserProfilesTableName"],
-            "USER_SEARCH_TABLE_NAME": values["UserSearchTableName"],
-            "FRIENDSHIPS_TABLE_NAME": values["FriendshipsTableName"],
-            "MESSAGES_TABLE_NAME": values["MessagesTableName"],
-            "CONNECTIONS_TABLE_NAME": values["ConnectionsTableName"],
-        }
-    )
+    settings = {
+        "WEBSOCKET_URL": values["WebSocketUrl"],
+        "USER_PROFILES_TABLE_NAME": values["UserProfilesTableName"],
+        "USER_SEARCH_TABLE_NAME": values["UserSearchTableName"],
+        "FRIENDSHIPS_TABLE_NAME": values["FriendshipsTableName"],
+        "MESSAGES_TABLE_NAME": values["MessagesTableName"],
+        "CONNECTIONS_TABLE_NAME": values["ConnectionsTableName"],
+    }
+    update_env(settings)
+    return settings
+
+
+def main():
+    try:
+        setup_realtime()
+    except RuntimeError as error:
+        print(error, file=sys.stderr)
+        raise SystemExit(1) from error
+
     print("Real-time messaging is ready. Start the backend with python3 main.py.")
 
 

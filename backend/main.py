@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from database import ensure_journal_entries_table, ensure_social_tables
 from routers import entries, friends, messages, profile_pictures, realtime, users
+from setup_realtime import setup_realtime
 
 logger = logging.getLogger("uvicorn.error")
 
@@ -13,6 +14,8 @@ logger = logging.getLogger("uvicorn.error")
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
     """Provision required cloud resources before accepting requests."""
+    setup_realtime()
+    logger.info("AWS WebSocket resources are ready.")
     table = ensure_journal_entries_table()
     logger.info("DynamoDB table '%s' is ready.", table.name)
     ensure_social_tables()

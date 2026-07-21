@@ -7,6 +7,18 @@ from dotenv import load_dotenv
 
 load_dotenv(Path(__file__).with_name(".env"))
 
+for environment_name, lowercase_name in {
+    "AWS_ACCESS_KEY_ID": "aws_access_key_id",
+    "AWS_SECRET_ACCESS_KEY": "aws_secret_access_key",
+    "AWS_SESSION_TOKEN": "aws_session_token",
+    "AWS_REGION": "aws_region",
+}.items():
+    if not os.environ.get(environment_name) and os.environ.get(lowercase_name):
+        os.environ[environment_name] = os.environ[lowercase_name]
+
+if not os.environ.get("AWS_REGION") and os.environ.get("region"):
+    os.environ["AWS_REGION"] = os.environ["region"]
+
 AWS_REGION = os.environ.get("AWS_REGION", "us-east-1")
 
 dynamodb = boto3.resource("dynamodb", region_name=AWS_REGION)

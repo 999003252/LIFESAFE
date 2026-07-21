@@ -4,7 +4,7 @@ import boto3
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
-from database import FRIENDSHIPS_TABLE, USER_PROFILES_TABLE, dynamodb
+from database import FRIENDSHIPS_TABLE, dynamodb
 from routers.users import get_profile, normalize_user_id, profile_response
 
 router = APIRouter(prefix="/friends", tags=["friends"])
@@ -34,32 +34,22 @@ def list_friends(userId: str):
         if not friend_ids:
             return []
 
-        profile_response_data = USER_PROFILES_TABLE.meta.client.batch_get_item(
-            RequestItems={
-                USER_PROFILES_TABLE.name: {
-                    "Keys": [{"userId": friend_id} for friend_id in friend_ids]
-                }
-            }
-        )
-        profiles = {
-            profile["userId"]: profile
-            for profile in profile_response_data.get("Responses", {}).get(
-                USER_PROFILES_TABLE.name, []
-            )
-        }
         friendship_by_id = {friendship["friendId"]: friendship for friendship in friendships}
 
-        return [
-            {
-                **profile_response(profiles[friend_id]),
-                "lastMessagePreview": friendship_by_id[friend_id].get(
-                    "lastMessagePreview", "No messages yet"
-                ),
-                "lastMessageAt": friendship_by_id[friend_id].get("lastMessageAt"),
-            }
-            for friend_id in friend_ids
-            if friend_id in profiles
-        ]
+        friends = []
+        for friend_id in friend_ids:
+            profile = get_profile(friend_id)
+            if profile:
+                friends.append(
+                    {
+                        **profile_response(profile),
+                        "lastMessagePreview": friendship_by_id[friend_id].get(
+                            "lastMessagePreview", "No messages yet"
+                        ),
+                        "lastMessageAt": friendship_by_id[friend_id].get("lastMessageAt"),
+                    }
+                )
+        return friends
     except Exception as error:
         raise HTTPException(status_code=500, detail="Could not load friends.") from error
 
@@ -78,8 +68,8 @@ def add_friend(friendship: FriendIn):
 
     created_at = datetime.now(timezone.utc).isoformat()
     item = {
-        "createdAt": {"S": created_at},
-        "lastMessagePreview": {"S": "No messages yet"},
+        "createdAt": created_at,
+        "lastMessagePreview": "No messages yet",
     }
 
     try:
@@ -89,22 +79,22 @@ def add_friend(friendship: FriendIn):
                     "Put": {
                         "TableName": FRIENDSHIPS_TABLE.name,
                         "Item": {
-                            "userId": {"S": user_id},
-                            "friendId": {"S": friend_id},
+                            "userId": user_id,
+                            "friendId": friend_id,
                             **item,
                         },
-                        "ConditionExpression": "attribute_not_exists(userId)",
+                        "ConditionExpression": "attribute_not_exists(userId) AND attribute_not_exists(friendId)",
                     }
                 },
                 {
                     "Put": {
                         "TableName": FRIENDSHIPS_TABLE.name,
                         "Item": {
-                            "userId": {"S": friend_id},
-                            "friendId": {"S": user_id},
+                            "userId": friend_id,
+                            "friendId": user_id,
                             **item,
                         },
-                        "ConditionExpression": "attribute_not_exists(userId)",
+                        "ConditionExpression": "attribute_not_exists(userId) AND attribute_not_exists(friendId)",
                     }
                 },
             ]

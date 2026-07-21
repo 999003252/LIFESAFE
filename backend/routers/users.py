@@ -108,20 +108,10 @@ def search_users(query: str, viewerId: str):
             return []
 
         profiles = []
-        batch_response = USER_PROFILES_TABLE.meta.client.batch_get_item(
-            RequestItems={
-                USER_PROFILES_TABLE.name: {
-                    "Keys": [{"userId": user_id} for user_id in user_ids]
-                }
-            }
-        )
-        profiles_by_id = {
-            item["userId"]: item
-            for item in batch_response.get("Responses", {}).get(USER_PROFILES_TABLE.name, [])
-        }
         for user_id in user_ids:
-            if user_id in profiles_by_id:
-                profiles.append(profile_response(profiles_by_id[user_id]))
+            profile = get_profile(user_id)
+            if profile:
+                profiles.append(profile_response(profile))
         return profiles
     except Exception as error:
         raise HTTPException(status_code=500, detail="Could not search users.") from error
