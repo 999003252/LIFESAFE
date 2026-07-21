@@ -19,19 +19,46 @@
   letter-spacing: 0.08rem;
 }
 
+.friends-actions {
+  display: flex;
+  gap: 0.45rem;
+}
+
 .friends-header button {
   width: 2.25rem;
   height: 2.25rem;
-  border: 0;
+  border: 1px solid #2c3542;
   border-radius: 0.75rem;
-  background: #ef9011;
+  background: #161b22;
   color: #fff;
   font-size: 1.4rem;
+  line-height: 1;
   cursor: pointer;
 }
 
 .friends-header button:hover {
+  border-color: #ef9011;
+}
+
+.friends-header .add-friend {
+  border-color: #ef9011;
+  background: #ef9011;
+}
+
+.friends-header .add-friend:hover {
   background: #d97c0d;
+}
+
+.friends-list.is-collapsed {
+  padding: 0.85rem 0.65rem;
+}
+
+.friends-list.is-collapsed .friends-header {
+  justify-content: center;
+}
+
+.friends-list.is-collapsed .friends-header h2 {
+  display: none;
 }
 
 .friends-list .search-bar {

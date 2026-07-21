@@ -5,6 +5,7 @@ import "./FriendsPage.css";
 
 export default function FriendsPage() {
   const [selectedFriend, setSelectedFriend] = useState("Sarah");
+  const [friendsMenuMinimized, setFriendsMenuMinimized] = useState(false);
 
   const [conversations, setConversations] = useState({
     Sarah: [
@@ -49,11 +50,13 @@ export default function FriendsPage() {
   };
 
   return (
-    <div className="friends-page">
+    <div className={`friends-page ${friendsMenuMinimized ? "friends-menu-minimized" : ""}`}>
       <FriendsList
         selectedFriend={selectedFriend}
         setSelectedFriend={setSelectedFriend}
         conversations={conversations}
+        isCollapsed={friendsMenuMinimized}
+        onToggleCollapsed={() => setFriendsMenuMinimized((current) => !current)}
       />
 
       <ChatWindow

@@ -5,14 +5,26 @@
   background: #1e242d;
 }
 
+.friends-page.friends-menu-minimized {
+  grid-template-columns: 64px minmax(0, 1fr);
+}
+
 @media (max-width: 1100px) {
   .friends-page {
     grid-template-columns: 240px minmax(0, 1fr);
+  }
+
+  .friends-page.friends-menu-minimized {
+    grid-template-columns: 64px minmax(0, 1fr);
   }
 }
 
 @media (max-width: 900px) {
   .friends-page {
+    grid-template-columns: 1fr;
+  }
+
+  .friends-page.friends-menu-minimized {
     grid-template-columns: 1fr;
   }
 }
