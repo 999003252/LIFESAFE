@@ -25,6 +25,8 @@ const Message = () => {
     <div className="message-page">
       <div className="message-content">
         <div className="message-main">
+          <h1 className="heading">Message</h1>
+
           <div className="recipient-row">
             <span>Send a message to</span>
             <input
