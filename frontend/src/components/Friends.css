@@ -113,7 +113,7 @@
 
 .friends-list .friend-card.active {
   background: #161b22;
-  border-color: #ef9011;
+  border-color: #2c3542;
 }
 
 .friends-list .avatar {
@@ -181,9 +181,12 @@
   cursor: pointer;
 }
 
-.collapsed-friend:hover,
+.collapsed-friend:hover {
+  border-color: #2c3542;
+}
+
 .collapsed-friend.active {
-  border-color: #ef9011;
+  border-color: transparent;
   background: #161b22;
 }
 
