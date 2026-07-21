@@ -8,6 +8,13 @@ export default function MessageInput({ sendMessage, disabled }) {
     if (text.trim() && sendMessage(text)) setText("");
   };
 
+  const handleKeyDown = (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      handleSend();
+    }
+  };
+
   return (
     <div className="message-input">
       <input
@@ -15,6 +22,7 @@ export default function MessageInput({ sendMessage, disabled }) {
         placeholder="Type a message..."
         value={text}
         onChange={(e) => setText(e.target.value)}
+        onKeyDown={handleKeyDown}
         disabled={disabled}
       />
 
