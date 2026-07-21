@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { getAuth } from "../auth";
+import { getAuth, getCookieValue, setCookieValue } from "../auth";
 import { fetchFriends, fetchMessages, fetchRealtimeConfig, markFriendRead } from "../api/friends";
 import FriendsList from "../components/FriendsList";
 import ChatWindow from "../components/ChatWindow";
@@ -10,7 +10,9 @@ export default function FriendsPage() {
   const [friends, setFriends] = useState([]);
   const [selectedFriend, setSelectedFriend] = useState(null);
   const [conversations, setConversations] = useState({});
-  const [friendsMenuMinimized, setFriendsMenuMinimized] = useState(false);
+  const [friendsMenuMinimized, setFriendsMenuMinimized] = useState(
+    () => getCookieValue("lifesafe_friends_collapsed") === "true"
+  );
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
   const socketRef = useRef(null);
@@ -125,6 +127,14 @@ export default function FriendsPage() {
     setSelectedFriend(friend);
   };
 
+  const toggleFriendsMenu = () => {
+    setFriendsMenuMinimized((current) => {
+      const next = !current;
+      setCookieValue("lifesafe_friends_collapsed", String(next));
+      return next;
+    });
+  };
+
   return (
     <div className={`friends-page ${friendsMenuMinimized ? "friends-menu-minimized" : ""}`}>
       <FriendsList
@@ -133,7 +143,7 @@ export default function FriendsPage() {
         selectedFriend={selectedFriend}
         setSelectedFriend={setSelectedFriend}
         isCollapsed={friendsMenuMinimized}
-        onToggleCollapsed={() => setFriendsMenuMinimized((current) => !current)}
+        onToggleCollapsed={toggleFriendsMenu}
         onFriendAdded={handleFriendAdded}
       />
 

@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { clearAuth, getAuth } from '../auth'
+import { clearAuth, getAuth, getCookieValue, setCookieValue } from '../auth'
 import './Sidebar.css'
 
 export default function Sidebar({ activeItem = 'Calendar' }) {
-  const [collapsed, setCollapsed] = useState(false)
+  const [collapsed, setCollapsed] = useState(() => getCookieValue('lifesafe_sidebar_collapsed') === 'true')
   const [accountMenuOpen, setAccountMenuOpen] = useState(false)
   const accountRef = useRef(null)
   const navigate = useNavigate()
@@ -21,6 +21,14 @@ export default function Sidebar({ activeItem = 'Calendar' }) {
   const handleLogout = () => {
     clearAuth()
     navigate('/login', { replace: true })
+  }
+
+  const toggleCollapsed = () => {
+    setCollapsed((current) => {
+      const next = !current
+      setCookieValue('lifesafe_sidebar_collapsed', String(next))
+      return next
+    })
   }
 
   useEffect(() => {
@@ -51,7 +59,7 @@ export default function Sidebar({ activeItem = 'Calendar' }) {
       <div className="sidebar-header">
         <div className="logo">lifesafe</div>
 
-        <button onClick={() => setCollapsed(!collapsed)} className="toggle-btn" type="button" aria-label="Toggle sidebar">
+        <button onClick={toggleCollapsed} className="toggle-btn" type="button" aria-label="Toggle sidebar">
           <i className="material-symbols-rounded">
             {collapsed ? 'chevron_right' : 'chevron_left'}
           </i>

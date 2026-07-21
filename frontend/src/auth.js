@@ -16,3 +16,15 @@ export function setAuth(email) {
 export function clearAuth() {
   document.cookie = `${COOKIE_NAME}=; path=/; max-age=0`
 }
+
+export function getCookieValue(name) {
+  const match = document.cookie
+    .split('; ')
+    .find((row) => row.startsWith(`${name}=`))
+  return match ? decodeURIComponent(match.split('=')[1]) : ''
+}
+
+export function setCookieValue(name, value) {
+  const maxAge = 365 * 24 * 60 * 60
+  document.cookie = `${name}=${encodeURIComponent(value)}; path=/; max-age=${maxAge}`
+}
