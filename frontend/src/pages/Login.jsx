@@ -2,19 +2,34 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import InputField from '../components/InputField'
 
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+
 const Login = () => {
   const [email, setEmail] = useState('')
   const [error, setError] = useState('')
   const navigate = useNavigate()
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     if (!email.trim()) {
       setError('Please enter your email')
       return
     }
-    setError('')
-    navigate('/otp', { state: { email } })
+    try {
+      const response = await fetch(`${API_BASE}/accounts/exists?email=${encodeURIComponent(email.trim())}`)
+      const account = await response.json()
+
+      if (!response.ok) throw new Error()
+      if (!account.exists) {
+        navigate('/create-account', { state: { email: email.trim() } })
+        return
+      }
+
+      setError('')
+      navigate('/otp', { state: { email: email.trim() } })
+    } catch {
+      setError('Could not check this account. Please try again.')
+    }
   }
 
   return (

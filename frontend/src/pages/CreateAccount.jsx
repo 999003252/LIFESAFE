@@ -1,13 +1,16 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import "../pages/CreateAccount.css";
+
+const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8000";
 
 function CreateAccount() {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [profileImage, setProfileImage] = useState(null);
 
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(location.state?.email || "");
   const [confirmEmail, setConfirmEmail] = useState("");
 
   const [password, setPassword] = useState("");
@@ -60,9 +63,20 @@ function CreateAccount() {
         alert(data);
         return;
       }
+
+      const accountResponse = await fetch(`${API_BASE}/accounts`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ firstName, lastName, email }),
+      });
+
+      if (!accountResponse.ok) {
+        const accountData = await accountResponse.json();
+        throw new Error(accountData.detail || "Could not finish creating your account.");
+      }
     
       alert("Account created successfully!");
-      navigate("/");
+      navigate("/login");
     
     } catch (error) {
       console.error("Signup error:", error);
