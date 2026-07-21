@@ -1,15 +1,15 @@
 .chat-window .message-input {
   display: flex;
   gap: 0.75rem;
-  margin-top: 1rem;
+  margin-top: 0;
 }
 
 .chat-window .message-input input {
   min-width: 0;
   flex: 1;
-  padding: 0.8rem 1rem;
+  padding: 0.7rem 0.9rem;
   border: 1px solid #2c3542;
-  border-radius: 99px;
+  border-radius: 0.4rem;
   outline: none;
   background: #0f1319;
   color: #fff;
@@ -25,7 +25,7 @@
 
 .chat-window .message-input button {
   border: 0;
-  border-radius: 99px;
+  border-radius: 0.4rem;
   background: #ef9011;
   color: #fff;
   padding: 0 1.25rem;
