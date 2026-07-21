@@ -83,29 +83,6 @@
   background: #161b22;
 }
 
-.chat-window .quick-messages {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  padding: 0;
-}
-
-.chat-window .quick-message {
-  border: 1px solid #2c3542;
-  border-radius: 99px;
-  background: transparent;
-  color: #cbd5e1;
-  padding: 0.45rem 0.75rem;
-  font: inherit;
-  font-size: 0.78rem;
-  cursor: pointer;
-}
-
-.chat-window .quick-message:hover {
-  border-color: #ef9011;
-  color: #fff;
-}
-
 @media (max-width: 560px) {
   .chat-window .chat-header,
   .chat-window .messages,

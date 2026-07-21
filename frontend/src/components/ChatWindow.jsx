@@ -1,5 +1,4 @@
 import MessageInput from "./MessageInput";
-import QuickMessages from "./QuickMessages";
 import "./ChatWindow.css";
 
 export default function ChatWindow({ friend, messages, sendMessage }) {
@@ -48,7 +47,6 @@ export default function ChatWindow({ friend, messages, sendMessage }) {
       </div>
 
       <div className="chat-footer">
-        <QuickMessages sendMessage={sendMessage} />
         <MessageInput sendMessage={sendMessage} />
       </div>
 
