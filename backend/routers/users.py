@@ -13,7 +13,11 @@ router = APIRouter(prefix="/users", tags=["users"])
 class UserProfileIn(BaseModel):
     email: str
     firstName: str
-    lastName: str
+    lastName: str = ""
+
+
+class ExistingUserIn(BaseModel):
+    email: str
 
 
 def normalize_user_id(value: str) -> str:
@@ -51,10 +55,10 @@ def upsert_profile(profile: UserProfileIn):
     first_name = profile.firstName.strip()
     last_name = profile.lastName.strip()
 
-    if "@" not in user_id or not first_name or not last_name:
+    if "@" not in user_id or not first_name:
         raise HTTPException(status_code=400, detail="Enter a name and valid email address.")
 
-    display_name = f"{first_name} {last_name}"
+    display_name = f"{first_name} {last_name}".strip()
     existing = get_profile(user_id)
     previous_prefixes = set(existing.get("searchPrefixes", [])) if existing else set()
     prefixes = search_prefixes(first_name, last_name, display_name, user_id)
@@ -82,6 +86,22 @@ def upsert_profile(profile: UserProfileIn):
         raise HTTPException(status_code=500, detail="Could not save the profile.") from error
 
     return profile_response(item)
+
+
+@router.post("/ensure")
+def ensure_profile(user: ExistingUserIn):
+    user_id = normalize_user_id(user.email)
+    existing = get_profile(user_id)
+    if existing:
+        return profile_response(existing)
+
+    local_name = re.sub(r"[._+-]+", " ", user_id.split("@", 1)[0]).strip()
+    if not local_name or "@" not in user_id:
+        raise HTTPException(status_code=400, detail="Enter a valid email address.")
+
+    return upsert_profile(
+        UserProfileIn(email=user_id, firstName=local_name.title())
+    )
 
 
 @router.get("")

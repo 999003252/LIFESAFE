@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useLocation, useNavigate, Navigate } from 'react-router-dom'
 import InputField from '../components/InputField'
 import { setAuth } from '../auth'
+import { ensureProfile } from '../api/friends'
 
 const Otp = () => {
   const location = useLocation()
@@ -15,7 +16,7 @@ const Otp = () => {
     return <Navigate to="/login" replace />
   }
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault()
     if (!code.trim()) {
       setError('Please enter the code we sent you')
@@ -24,6 +25,11 @@ const Otp = () => {
     setError('')
     // Accept any code for now.
     setAuth(email)
+    try {
+      await ensureProfile(email)
+    } catch {
+      // Protected pages retry this request after navigation.
+    }
     navigate('/', { replace: true })
   }
 

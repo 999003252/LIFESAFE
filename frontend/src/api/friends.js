@@ -19,6 +19,14 @@ export function upsertProfile(profile) {
   })
 }
 
+export function ensureProfile(email) {
+  return request('/users/ensure', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email }),
+  })
+}
+
 export function searchUsers(query, viewerId) {
   return request(`/users?query=${encodeURIComponent(query)}&viewerId=${encodeURIComponent(viewerId)}`)
 }
