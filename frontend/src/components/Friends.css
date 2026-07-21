@@ -127,6 +127,8 @@
   place-items: center;
   font-size: 0.75rem;
   font-weight: 700;
+  object-fit: cover;
+  overflow: hidden;
 }
 
 .friends-list .friend-info {

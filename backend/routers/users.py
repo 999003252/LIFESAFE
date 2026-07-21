@@ -5,7 +5,12 @@ import boto3
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
-from database import USER_PROFILES_TABLE, USER_SEARCH_TABLE
+from database import (
+    PROFILE_PICTURES_BUCKET,
+    USER_PROFILES_TABLE,
+    USER_SEARCH_TABLE,
+    s3,
+)
 
 router = APIRouter(prefix="/users", tags=["users"])
 
@@ -25,12 +30,26 @@ def normalize_user_id(value: str) -> str:
 
 
 def profile_response(profile: dict) -> dict:
+    picture_key = profile.get("profilePictureKey")
+    picture_url = None
+
+    if picture_key:
+        try:
+            picture_url = s3.generate_presigned_url(
+                "get_object",
+                Params={"Bucket": PROFILE_PICTURES_BUCKET, "Key": picture_key},
+                ExpiresIn=3600,
+            )
+        except Exception:
+            picture_url = None
+
     return {
         "userId": profile["userId"],
         "firstName": profile["firstName"],
         "lastName": profile["lastName"],
         "displayName": profile["displayName"],
-        "profilePictureKey": profile.get("profilePictureKey"),
+        "profilePictureKey": picture_key,
+        "profilePictureUrl": picture_url,
     }
 
 

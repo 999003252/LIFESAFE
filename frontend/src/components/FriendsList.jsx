@@ -6,6 +6,14 @@ function initials(name) {
   return name.split(" ").map((part) => part[0]).join("").slice(0, 2).toUpperCase();
 }
 
+function FriendAvatar({ friend }) {
+  if (friend.profilePictureUrl) {
+    return <img className="avatar" src={friend.profilePictureUrl} alt="" />;
+  }
+
+  return <span className="avatar" aria-hidden="true">{initials(friend.displayName)}</span>;
+}
+
 export default function FriendsList({
   currentUser,
   friends,
@@ -62,7 +70,7 @@ export default function FriendsList({
                 className={`friend-card ${selectedFriend?.userId === friend.userId ? "active" : ""}`}
                 onClick={() => setSelectedFriend(friend)}
               >
-                <div className="avatar" aria-hidden="true">{initials(friend.displayName)}</div>
+                <FriendAvatar friend={friend} />
                 <div className="friend-info">
                   <h4>{friend.displayName}</h4>
                   <p>{friend.lastMessagePreview || "No messages yet"}</p>
@@ -88,7 +96,7 @@ export default function FriendsList({
               title={friend.displayName}
               aria-label={`Open conversation with ${friend.displayName}`}
             >
-              <span className="avatar" aria-hidden="true">{initials(friend.displayName)}</span>
+              <FriendAvatar friend={friend} />
               {!!friend.unreadCount && <i className="material-symbols-rounded unread-bell" aria-label={`${friend.unreadCount} unread messages`}>notifications</i>}
             </button>
           ))}
