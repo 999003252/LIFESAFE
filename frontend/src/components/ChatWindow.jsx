@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import MessageInput from "./MessageInput";
 import "./ChatWindow.css";
 
@@ -7,11 +8,31 @@ function formatTime(value) {
 }
 
 export default function ChatWindow({ friend, messages, currentUser, loading, error, sendMessage }) {
+  const messagesRef = useRef(null);
+  const endOfMessagesRef = useRef(null);
+  const isAtBottomRef = useRef(true);
+  const activeFriendRef = useRef(null);
+
+  useEffect(() => {
+    const friendChanged = activeFriendRef.current !== friend?.userId;
+    activeFriendRef.current = friend?.userId;
+
+    if (friendChanged || isAtBottomRef.current) {
+      endOfMessagesRef.current?.scrollIntoView({ block: "end" });
+    }
+  }, [friend?.userId, messages.length]);
+
+  const handleScroll = () => {
+    const container = messagesRef.current;
+    if (!container) return;
+    isAtBottomRef.current = container.scrollHeight - container.scrollTop - container.clientHeight < 48;
+  };
+
   return (
     <div className="chat-window">
       <div className="chat-header">{friend ? friend.displayName : "Messages"}</div>
 
-      <div className="messages">
+      <div className="messages" ref={messagesRef} onScroll={handleScroll}>
         {loading && <p className="chat-notice">Loading friends...</p>}
         {!loading && !friend && <p className="chat-notice">Choose a friend to view your conversation.</p>}
         {friend && !messages.length && <p className="chat-notice">No messages yet. Start the conversation.</p>}
@@ -27,6 +48,7 @@ export default function ChatWindow({ friend, messages, currentUser, loading, err
             </div>
           );
         })}
+        <div ref={endOfMessagesRef} />
       </div>
 
       <div className="chat-footer">

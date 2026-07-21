@@ -4,9 +4,11 @@
   min-height: 0;
   flex-direction: column;
   background: #1e242d;
+  overflow: hidden;
 }
 
 .chat-window .chat-header {
+  flex-shrink: 0;
   padding: 2rem;
   border-bottom: 1px solid #222b36;
   color: #fff;
@@ -17,9 +19,10 @@
 
 .chat-window .messages {
   flex: 1;
-  min-height: 18rem;
+  min-height: 0;
   padding: 2rem;
   overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .chat-window .message-row {
@@ -84,6 +87,7 @@
 
 .chat-window .chat-footer {
   display: flex;
+  flex-shrink: 0;
   min-height: 64px;
   flex-direction: column;
   justify-content: center;

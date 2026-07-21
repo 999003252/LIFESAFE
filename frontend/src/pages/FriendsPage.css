@@ -5,6 +5,17 @@
   background: #1e242d;
 }
 
+@media (min-width: 901px) {
+  .friends-page,
+  .friends-page .chat-window {
+    height: 100vh;
+  }
+
+  .friends-page {
+    overflow: hidden;
+  }
+}
+
 .friends-page.friends-menu-minimized {
   grid-template-columns: 64px minmax(0, 1fr);
 }
