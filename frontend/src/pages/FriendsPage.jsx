@@ -1,7 +1,6 @@
 import { useState } from "react";
 import FriendsList from "../components/FriendsList";
 import ChatWindow from "../components/ChatWindow";
-import WellnessPanel from "../components/WellnessPanel";
 import "./FriendsPage.css";
 
 export default function FriendsPage() {
@@ -52,18 +51,16 @@ export default function FriendsPage() {
   return (
     <div className="friends-page">
       <FriendsList
-  selectedFriend={selectedFriend}
-  setSelectedFriend={setSelectedFriend}
-  conversations={conversations}
-/>
+        selectedFriend={selectedFriend}
+        setSelectedFriend={setSelectedFriend}
+        conversations={conversations}
+      />
 
-        <ChatWindow
+      <ChatWindow
         friend={selectedFriend}
         messages={conversations[selectedFriend]}
         sendMessage={sendMessage}
-        />
-
-      <WellnessPanel friend={selectedFriend} />
+      />
     </div>
   );
 }
