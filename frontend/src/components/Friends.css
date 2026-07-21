@@ -1,162 +1,109 @@
 .friends-list {
-    width: 280px;
-    background: #161b22;
-    color: white;
-    padding: 20px;
-  }
-  
-  .friends-header {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 15px;
-    color: white;
-  }
-  
-  .friends-header h2 {
-    color: white;
-}
-  
-  .search-bar {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 15px;
-  }
-  
-  .friend-card {
-    display: flex;
-    gap: 10px;
-    padding: 12px;
-    border-radius: 8px;
-    cursor: pointer;
-  }
-  
-  .friend-card:hover {
-    background: #252c36;
-  }
-  
-  .avatar {
-    width: 45px;
-    height: 45px;
-    background: #ef9011;
-    border-radius: 50%;
-  }
-  
-  .chat-window {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    background: #1e242d;
-  }
-  
-  .chat-header {
-    color: white;
-    padding: 20px;
-    border-bottom: 1px solid #333;
-  }
-
-
-  
-  .quick-messages {
-    display: flex;
-    gap: 10px;
-    padding: 10px;
-  }
-  
-  .quick-messages button {
-    background: #252c36;
-    color: white;
-    border: none;
-    padding: 8px 12px;
-    border-radius: 20px;
-  }
-  
-  .message-input {
-    display: flex;
-    padding: 20px;
-    gap: 10px;
-  }
-  
-  .message-input input {
-    flex: 1;
-    padding: 12px;
-  }
-  
-  .message-input button {
-    background: #ef9011;
-    border: none;
-    color: white;
-    padding: 12px 20px;
-    border-radius: 8px;
-  }
-  
-  .wellness-panel {
-    width: 300px;
-    background: #161b22;
-    color: white;
-    padding: 20px;
-  }
-  
-  .wellness-card {
-    background: #252c36;
-    padding: 15px;
-    border-radius: 10px;
-    margin-top: 15px;
-  }
-
-  .friend-card.active {
-    background: #ef9011;
-  }
-  
-  .friend-card.active p,
-  .friend-card.active h4 {
-    color: white;
-  }
-
-  .friend-card {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-
-    padding: 14px;
-    border-radius: 12px;
-
-    cursor: pointer;
-    transition: .2s;
+  min-width: 0;
+  padding: 2rem 1.25rem;
+  background: #0f1319;
+  border-right: 1px solid #222b36;
+  color: #fff;
 }
 
-.friend-card:hover {
-    background: #2a313d;
+.friends-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
 }
 
-.friend-card.active {
-    background: #ef9011;
+.friends-header h2 {
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 2rem;
+  letter-spacing: 0.08rem;
 }
 
-.avatar {
-    width: 48px;
-    height: 48px;
-
-    border-radius: 50%;
-    background: #ef9011;
-
-    flex-shrink: 0;
+.friends-header button {
+  width: 2.25rem;
+  height: 2.25rem;
+  border: 0;
+  border-radius: 0.75rem;
+  background: #ef9011;
+  color: #fff;
+  font-size: 1.4rem;
+  cursor: pointer;
 }
 
-.friend-info {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-
-    flex: 1;
+.friends-header button:hover {
+  background: #d97c0d;
 }
 
-.friend-info h4 {
-    color: white;
-    font-size: 16px;
-    margin-bottom: 4px;
+.friends-list .search-bar {
+  width: 100%;
+  margin-bottom: 1rem;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid #2c3542;
+  border-radius: 0.75rem;
+  outline: none;
+  background: #161b22;
+  color: #fff;
 }
 
-.friend-info p {
-    color: #b6becb;
-    font-size: 13px;
+.friends-list .search-bar:focus {
+  border-color: #ef9011;
+}
+
+.friends-list .search-bar::placeholder {
+  color: #78879e;
+}
+
+.friends-list .friend-card {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.35rem;
+  padding: 0.75rem;
+  border: 1px solid transparent;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.friends-list .friend-card:hover {
+  background: #161b22;
+  border-color: #222b36;
+}
+
+.friends-list .friend-card.active {
+  background: #161b22;
+  border-color: #ef9011;
+}
+
+.friends-list .avatar {
+  width: 2.5rem;
+  height: 2.5rem;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: #ef9011;
+}
+
+.friends-list .friend-info {
+  min-width: 0;
+}
+
+.friends-list .friend-info h4 {
+  margin-bottom: 0.2rem;
+  color: #fff;
+  font-size: 0.95rem;
+}
+
+.friends-list .friend-info p {
+  overflow: hidden;
+  color: #78879e;
+  font-size: 0.78rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 900px) {
+  .friends-list {
+    border-right: 0;
+    border-bottom: 1px solid #222b36;
+  }
 }
