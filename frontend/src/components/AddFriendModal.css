@@ -51,6 +51,8 @@
   border-radius: 50%;
   background: #ef9011;
   font-weight: 700;
+  object-fit: cover;
+  overflow: hidden;
 }
 
 .search-user span, .search-user small { display: block; }

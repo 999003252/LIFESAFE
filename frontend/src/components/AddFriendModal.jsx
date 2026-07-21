@@ -2,6 +2,18 @@ import { useEffect, useState } from "react";
 import { addFriend, searchUsers } from "../api/friends";
 import "./AddFriendModal.css";
 
+function initials(name) {
+  return name.split(" ").map((part) => part[0]).join("").slice(0, 2).toUpperCase();
+}
+
+function UserAvatar({ user }) {
+  if (user.profilePictureUrl) {
+    return <img className="avatar" src={user.profilePictureUrl} alt="" />;
+  }
+
+  return <span className="avatar" aria-hidden="true">{initials(user.displayName)}</span>;
+}
+
 export default function AddFriendModal({ currentUser, onAdded, onClose }) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
@@ -60,7 +72,7 @@ export default function AddFriendModal({ currentUser, onAdded, onClose }) {
         <div className="search-results">
           {results.map((user) => (
             <div className="search-user" key={user.userId}>
-              <div className="avatar" aria-hidden="true">{user.displayName.slice(0, 1)}</div>
+              <UserAvatar user={user} />
               <div>
                 <span>{user.displayName}</span>
                 <small>{user.userId}</small>
