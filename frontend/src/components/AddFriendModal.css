@@ -1,70 +1,71 @@
 .modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,.6);
-
-    display:flex;
-    justify-content:center;
-    align-items:center;
+  position: fixed;
+  z-index: 20;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.65);
 }
 
-.modal{
-    width:450px;
-    background:#161b22;
-    border:1px solid #222b36;
-    border-radius:1rem;
-    padding:25px;
-    color:white;
+.modal {
+  width: min(100%, 28rem);
+  padding: 1.5rem;
+  border: 1px solid #2c3542;
+  border-radius: 1rem;
+  background: #161b22;
+  color: #fff;
 }
 
-.modal h2{
-    margin-bottom:20px;
+.modal h2 { margin-bottom: 0.35rem; }
+.modal > p { color: #9aa8bc; font-size: 0.9rem; }
+
+.friend-search {
+  width: 100%;
+  margin: 1.25rem 0 0.75rem;
+  padding: 0.8rem 0.9rem;
+  border: 1px solid #2c3542;
+  border-radius: 0.75rem;
+  outline: 0;
+  background: #0f1319;
+  color: #fff;
 }
 
-.friend-search{
-    width:100%;
-    padding:12px;
-    border-radius:8px;
-    border:1px solid #2c3542;
-    background:#0f1319;
-    color:white;
-    margin-bottom:20px;
+.friend-search:focus { border-color: #ef9011; }
+.search-results { max-height: 18rem; overflow-y: auto; }
+
+.search-user {
+  display: grid;
+  grid-template-columns: 2.5rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #222b36;
 }
 
-.search-user{
-    display:flex;
-    align-items:center;
-    gap:15px;
-    padding:12px 0;
+.search-user .avatar {
+  display: grid;
+  width: 2.5rem;
+  height: 2.5rem;
+  place-items: center;
+  border-radius: 50%;
+  background: #ef9011;
+  font-weight: 700;
 }
 
-.search-user .avatar{
-    width:45px;
-    height:45px;
-    background:#ef9011;
-    border-radius:50%;
+.search-user span, .search-user small { display: block; }
+.search-user small { margin-top: 0.2rem; color: #78879e; font-size: 0.72rem; overflow: hidden; text-overflow: ellipsis; }
+
+.add-button, .close-button {
+  border: 0;
+  border-radius: 0.65rem;
+  color: #fff;
+  font: inherit;
+  cursor: pointer;
 }
 
-.search-user span{
-    flex:1;
-}
-
-.add-button{
-    background:#ef9011;
-    color:white;
-    border:none;
-    padding:8px 16px;
-    border-radius:8px;
-    cursor:pointer;
-}
-
-.close-button{
-    margin-top:20px;
-    width:100%;
-    padding:12px;
-    border:none;
-    border-radius:8px;
-    background:#2c3542;
-    color:white;
-    cursor:pointer;
-}
+.add-button { padding: 0.5rem 0.75rem; background: #ef9011; }
+.add-button:disabled { opacity: 0.65; cursor: wait; }
+.close-button { width: 100%; margin-top: 1.25rem; padding: 0.75rem; background: #2c3542; }
+.modal-error, .empty-search { margin-top: 0.75rem; color: #f3a0a0 !important; font-size: 0.85rem; }
+.empty-search { color: #78879e !important; }

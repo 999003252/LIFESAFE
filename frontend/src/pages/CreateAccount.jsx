@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { upsertProfile } from "../api/friends";
 import "../pages/CreateAccount.css";
 
 const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8000";
@@ -64,6 +65,12 @@ function CreateAccount() {
         alert(data);
         return;
       }
+
+      await upsertProfile({
+        email,
+        firstName,
+        lastName,
+      });
     
       if (profileImageFile) {
         const imageData = new FormData();

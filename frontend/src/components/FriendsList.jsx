@@ -1,28 +1,29 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import AddFriendModal from "./AddFriendModal";
 import "./Friends.css";
 
-const friends = [
-  "Sarah",
-  "John",
-  "Mike",
-  "Emily",
-  "Alex"
-];
+function initials(name) {
+  return name.split(" ").map((part) => part[0]).join("").slice(0, 2).toUpperCase();
+}
 
 export default function FriendsList({
+  currentUser,
+  friends,
   selectedFriend,
   setSelectedFriend,
-  conversations,
   isCollapsed,
-  onToggleCollapsed
+  onToggleCollapsed,
+  onFriendAdded,
 }) {
-
   const [showModal, setShowModal] = useState(false);
+  const [query, setQuery] = useState("");
+  const visibleFriends = useMemo(
+    () => friends.filter((friend) => friend.displayName.toLowerCase().includes(query.trim().toLowerCase())),
+    [friends, query]
+  );
 
   return (
     <div className={`friends-list ${isCollapsed ? "is-collapsed" : ""}`}>
-
       <div className="friends-header">
         <h2>Friends</h2>
 
@@ -38,14 +39,7 @@ export default function FriendsList({
           </button>
 
           {!isCollapsed && (
-            <button
-              type="button"
-              className="add-friend"
-              onClick={() => setShowModal(true)}
-              aria-label="Add friend"
-            >
-              +
-            </button>
+            <button type="button" className="add-friend" onClick={() => setShowModal(true)} aria-label="Add friend">+</button>
           )}
         </div>
       </div>
@@ -54,38 +48,41 @@ export default function FriendsList({
         <>
           <input
             className="search-bar"
-            type="text"
-            placeholder="Search friends..."
+            type="search"
+            placeholder="Search friends"
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
           />
 
-          {friends.map((friend) => (
-            <div
-              key={friend}
-              className={`friend-card ${
-                selectedFriend === friend ? "active" : ""
-              }`}
-              onClick={() => setSelectedFriend(friend)}
-            >
-              <div className="avatar"></div>
+          <div className="friends-results">
+            {visibleFriends.map((friend) => (
+              <button
+                type="button"
+                key={friend.userId}
+                className={`friend-card ${selectedFriend?.userId === friend.userId ? "active" : ""}`}
+                onClick={() => setSelectedFriend(friend)}
+              >
+                <div className="avatar" aria-hidden="true">{initials(friend.displayName)}</div>
+                <div className="friend-info">
+                  <h4>{friend.displayName}</h4>
+                  <p>{friend.lastMessagePreview || "No messages yet"}</p>
+                </div>
+              </button>
+            ))}
 
-              <div className="friend-info">
-                <h4>{friend}</h4>
-                <p>
-                  {conversations[friend][conversations[friend].length - 1].text.slice(0, 30)}
-                  {conversations[friend][conversations[friend].length - 1].text.length > 30 && "..."}
-                </p>
-              </div>
-            </div>
-          ))}
+            {!friends.length && <p className="friends-empty">Add a registered user to start a conversation.</p>}
+            {!!friends.length && !visibleFriends.length && <p className="friends-empty">No friends match that search.</p>}
+          </div>
         </>
       )}
 
       {showModal && (
         <AddFriendModal
+          currentUser={currentUser}
+          onAdded={onFriendAdded}
           onClose={() => setShowModal(false)}
         />
       )}
-
     </div>
   );
 }

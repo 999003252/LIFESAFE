@@ -36,3 +36,9 @@
 .chat-window .message-input button:hover {
   background: #d97c0d;
 }
+
+.chat-window .message-input input:disabled,
+.chat-window .message-input button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}

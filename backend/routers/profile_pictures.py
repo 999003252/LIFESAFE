@@ -2,7 +2,12 @@ import uuid
 
 from fastapi import APIRouter, File, Form, HTTPException, UploadFile
 
-from database import PROFILE_PICTURES_BUCKET, ensure_profile_pictures_bucket, s3
+from database import (
+    PROFILE_PICTURES_BUCKET,
+    ensure_profile_pictures_bucket,
+    s3,
+    update_profile_picture,
+)
 
 router = APIRouter(prefix="/profile-pictures", tags=["profile-pictures"])
 
@@ -28,6 +33,7 @@ async def upload_profile_picture(
             Body=image_bytes,
             ContentType=image.content_type,
         )
+        update_profile_picture(email, picture_key)
     except Exception as error:
         raise HTTPException(
             status_code=500, detail=f"Failed to upload profile picture: {error}"

@@ -81,6 +81,7 @@
 }
 
 .friends-list .friend-card {
+  width: 100%;
   display: flex;
   align-items: center;
   gap: 0.75rem;
@@ -88,6 +89,10 @@
   padding: 0.75rem;
   border: 1px solid transparent;
   border-radius: 0.75rem;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
   cursor: pointer;
   transition: background 0.15s, border-color 0.15s;
 }
@@ -108,6 +113,11 @@
   flex-shrink: 0;
   border-radius: 50%;
   background: #ef9011;
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-size: 0.75rem;
+  font-weight: 700;
 }
 
 .friends-list .friend-info {
@@ -126,6 +136,13 @@
   font-size: 0.78rem;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.friends-empty {
+  padding: 1rem 0.75rem;
+  color: #78879e;
+  font-size: 0.85rem;
+  line-height: 1.5;
 }
 
 @media (max-width: 900px) {

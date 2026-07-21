@@ -4,8 +4,8 @@ import logging
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from database import ensure_journal_entries_table
-from routers import entries, profile_pictures
+from database import ensure_journal_entries_table, ensure_social_tables
+from routers import entries, friends, messages, profile_pictures, realtime, users
 
 logger = logging.getLogger("uvicorn.error")
 
@@ -15,6 +15,8 @@ async def lifespan(_app: FastAPI):
     """Provision required cloud resources before accepting requests."""
     table = ensure_journal_entries_table()
     logger.info("DynamoDB table '%s' is ready.", table.name)
+    ensure_social_tables()
+    logger.info("Friends and messaging tables are ready.")
     yield
 
 
@@ -29,6 +31,10 @@ app.add_middleware(
 )
 
 app.include_router(entries.router)
+app.include_router(users.router)
+app.include_router(friends.router)
+app.include_router(messages.router)
+app.include_router(realtime.router)
 app.include_router(profile_pictures.router)
 
 
