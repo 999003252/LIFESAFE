@@ -1,6 +1,6 @@
 .friends-list {
   min-width: 0;
-  padding: 2rem 1.25rem;
+  padding: 1.75rem 1rem;
   background: #0f1319;
   border-right: 1px solid #222b36;
   color: #fff;
@@ -28,7 +28,7 @@
   width: 2.25rem;
   height: 2.25rem;
   border: 1px solid #2c3542;
-  border-radius: 0.75rem;
+  border-radius: 0.35rem;
   background: #161b22;
   color: #fff;
   font-size: 1.4rem;
@@ -50,7 +50,7 @@
 }
 
 .friends-list.is-collapsed {
-  padding: 0.85rem 0.65rem;
+  padding: 0.9rem 0.55rem;
 }
 
 .friends-list.is-collapsed .friends-header {
@@ -61,12 +61,21 @@
   display: none;
 }
 
+.friends-list.is-collapsed .friends-header {
+  margin-bottom: 1.4rem;
+}
+
+.friends-list.is-collapsed .friends-actions {
+  width: 100%;
+  justify-content: center;
+}
+
 .friends-list .search-bar {
   width: 100%;
   margin-bottom: 1rem;
   padding: 0.75rem 0.9rem;
   border: 1px solid #2c3542;
-  border-radius: 0.75rem;
+  border-radius: 0.4rem;
   outline: none;
   background: #161b22;
   color: #fff;
@@ -88,7 +97,7 @@
   margin-bottom: 0.35rem;
   padding: 0.75rem;
   border: 1px solid transparent;
-  border-radius: 0.75rem;
+  border-radius: 0.4rem;
   background: transparent;
   color: inherit;
   font: inherit;
@@ -122,6 +131,7 @@
 
 .friends-list .friend-info {
   min-width: 0;
+  flex: 1;
 }
 
 .friends-list .friend-info h4 {
@@ -143,6 +153,49 @@
   color: #78879e;
   font-size: 0.85rem;
   line-height: 1.5;
+}
+
+.friends-list .unread-bell {
+  flex-shrink: 0;
+  color: #ef9011;
+  font-size: 1rem;
+}
+
+.collapsed-friends {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.collapsed-friend {
+  position: relative;
+  display: grid;
+  width: 3rem;
+  height: 3rem;
+  place-items: center;
+  padding: 0.25rem;
+  border: 1px solid transparent;
+  border-radius: 0.4rem;
+  background: transparent;
+  cursor: pointer;
+}
+
+.collapsed-friend:hover,
+.collapsed-friend.active {
+  border-color: #ef9011;
+  background: #161b22;
+}
+
+.collapsed-friend .unread-bell {
+  position: absolute;
+  right: -0.25rem;
+  bottom: -0.2rem;
+  padding: 0.12rem;
+  border: 1px solid #0f1319;
+  background: #0f1319;
+  color: #ef9011;
+  font-size: 0.85rem;
 }
 
 @media (max-width: 900px) {

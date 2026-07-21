@@ -43,6 +43,14 @@ export function addFriend(userId, friendId) {
   })
 }
 
+export function markFriendRead(userId, friendId) {
+  return request('/friends/read', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ userId, friendId }),
+  })
+}
+
 export function fetchMessages(userId, friendId) {
   return request(`/messages?userId=${encodeURIComponent(userId)}&friendId=${encodeURIComponent(friendId)}`)
 }

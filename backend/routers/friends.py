@@ -15,6 +15,10 @@ class FriendIn(BaseModel):
     friendId: str
 
 
+class FriendReadIn(FriendIn):
+    pass
+
+
 def friendship_exists(user_id: str, friend_id: str) -> bool:
     response = FRIENDSHIPS_TABLE.get_item(
         Key={"userId": user_id, "friendId": friend_id}
@@ -47,6 +51,7 @@ def list_friends(userId: str):
                             "lastMessagePreview", "No messages yet"
                         ),
                         "lastMessageAt": friendship_by_id[friend_id].get("lastMessageAt"),
+                        "unreadCount": friendship_by_id[friend_id].get("unreadCount", 0),
                     }
                 )
         return friends
@@ -70,6 +75,8 @@ def add_friend(friendship: FriendIn):
     item = {
         "createdAt": created_at,
         "lastMessagePreview": "No messages yet",
+        "lastReadAt": created_at,
+        "unreadCount": 0,
     }
 
     try:
@@ -107,3 +114,22 @@ def add_friend(friendship: FriendIn):
         raise HTTPException(status_code=500, detail="Could not add friend.") from error
 
     return profile_response(get_profile(friend_id))
+
+
+@router.post("/read")
+def mark_friend_read(friendship: FriendReadIn):
+    user_id = normalize_user_id(friendship.userId)
+    friend_id = normalize_user_id(friendship.friendId)
+
+    if not friendship_exists(user_id, friend_id):
+        raise HTTPException(status_code=404, detail="That friend connection could not be found.")
+
+    FRIENDSHIPS_TABLE.update_item(
+        Key={"userId": user_id, "friendId": friend_id},
+        UpdateExpression="SET unreadCount = :zero, lastReadAt = :readAt",
+        ExpressionAttributeValues={
+            ":zero": 0,
+            ":readAt": datetime.now(timezone.utc).isoformat(),
+        },
+    )
+    return {"status": "read"}

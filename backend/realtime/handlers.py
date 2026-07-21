@@ -88,12 +88,16 @@ def send_message(event, _context):
     }
     messages.put_item(Item=message)
 
-    for owner_id, friend_id in ((sender_id, recipient_id), (recipient_id, sender_id)):
-        friendships.update_item(
-            Key={"userId": owner_id, "friendId": friend_id},
-            UpdateExpression="SET lastMessagePreview = :text, lastMessageAt = :sentAt",
-            ExpressionAttributeValues={":text": text[:80], ":sentAt": sent_at},
-        )
+    friendships.update_item(
+        Key={"userId": sender_id, "friendId": recipient_id},
+        UpdateExpression="SET lastMessagePreview = :text, lastMessageAt = :sentAt, lastReadAt = :sentAt, unreadCount = :zero",
+        ExpressionAttributeValues={":text": text[:80], ":sentAt": sent_at, ":zero": 0},
+    )
+    friendships.update_item(
+        Key={"userId": recipient_id, "friendId": sender_id},
+        UpdateExpression="SET lastMessagePreview = :text, lastMessageAt = :sentAt ADD unreadCount :one",
+        ExpressionAttributeValues={":text": text[:80], ":sentAt": sent_at, ":one": 1},
+    )
 
     payload = json.dumps({"type": "message", "message": message}).encode("utf-8")
     for user_id in {sender_id, recipient_id}:

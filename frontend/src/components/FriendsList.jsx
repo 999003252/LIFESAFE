@@ -67,6 +67,7 @@ export default function FriendsList({
                   <h4>{friend.displayName}</h4>
                   <p>{friend.lastMessagePreview || "No messages yet"}</p>
                 </div>
+                {!!friend.unreadCount && <i className="material-symbols-rounded unread-bell" aria-label={`${friend.unreadCount} unread messages`}>notifications</i>}
               </button>
             ))}
 
@@ -74,6 +75,24 @@ export default function FriendsList({
             {!!friends.length && !visibleFriends.length && <p className="friends-empty">No friends match that search.</p>}
           </div>
         </>
+      )}
+
+      {isCollapsed && (
+        <div className="collapsed-friends">
+          {friends.map((friend) => (
+            <button
+              type="button"
+              key={friend.userId}
+              className={`collapsed-friend ${selectedFriend?.userId === friend.userId ? "active" : ""}`}
+              onClick={() => setSelectedFriend(friend)}
+              title={friend.displayName}
+              aria-label={`Open conversation with ${friend.displayName}`}
+            >
+              <span className="avatar" aria-hidden="true">{initials(friend.displayName)}</span>
+              {!!friend.unreadCount && <i className="material-symbols-rounded unread-bell" aria-label={`${friend.unreadCount} unread messages`}>notifications</i>}
+            </button>
+          ))}
+        </div>
       )}
 
       {showModal && (

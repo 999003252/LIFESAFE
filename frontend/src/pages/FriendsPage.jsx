@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { getAuth } from "../auth";
-import { fetchFriends, fetchMessages, fetchRealtimeConfig } from "../api/friends";
+import { fetchFriends, fetchMessages, fetchRealtimeConfig, markFriendRead } from "../api/friends";
 import FriendsList from "../components/FriendsList";
 import ChatWindow from "../components/ChatWindow";
 import "./FriendsPage.css";
@@ -14,6 +14,11 @@ export default function FriendsPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
   const socketRef = useRef(null);
+  const selectedFriendRef = useRef(null);
+
+  useEffect(() => {
+    selectedFriendRef.current = selectedFriend;
+  }, [selectedFriend]);
 
   const refreshFriends = useCallback(async () => {
     try {
@@ -38,7 +43,11 @@ export default function FriendsPage() {
     fetchMessages(currentUser, selectedFriend.userId)
       .then((messages) => {
         setConversations((current) => ({ ...current, [selectedFriend.userId]: messages }));
+        return markFriendRead(currentUser, selectedFriend.userId);
       })
+      .then(() => setFriends((current) => current.map((friend) => (
+        friend.userId === selectedFriend.userId ? { ...friend, unreadCount: 0 } : friend
+      ))))
       .catch((loadError) => setError(loadError.message));
   }, [currentUser, selectedFriend]);
 
@@ -60,6 +69,8 @@ export default function FriendsPage() {
 
           const message = payload.message;
           const friendId = message.senderId === currentUser ? message.recipientId : message.senderId;
+          const isIncoming = message.recipientId === currentUser;
+          const isOpenConversation = selectedFriendRef.current?.userId === friendId;
           setConversations((current) => {
             const existing = current[friendId] || [];
             if (existing.some((item) => item.messageId === message.messageId)) return current;
@@ -67,9 +78,17 @@ export default function FriendsPage() {
           });
           setFriends((current) => current.map((friend) => (
             friend.userId === friendId
-              ? { ...friend, lastMessagePreview: message.text, lastMessageAt: message.sentAt }
+              ? {
+                ...friend,
+                lastMessagePreview: message.text,
+                lastMessageAt: message.sentAt,
+                unreadCount: isIncoming && !isOpenConversation ? (friend.unreadCount || 0) + 1 : 0,
+              }
               : friend
           )));
+          if (isIncoming && isOpenConversation) {
+            markFriendRead(currentUser, friendId).catch(() => {});
+          }
         };
         socket.onclose = () => {
           if (!stopped) reconnectTimer = window.setTimeout(connect, 2000);
@@ -102,7 +121,7 @@ export default function FriendsPage() {
   };
 
   const handleFriendAdded = (friend) => {
-    setFriends((current) => [...current, { ...friend, lastMessagePreview: "No messages yet" }]);
+    setFriends((current) => [...current, { ...friend, lastMessagePreview: "No messages yet", unreadCount: 0 }]);
     setSelectedFriend(friend);
   };
 
