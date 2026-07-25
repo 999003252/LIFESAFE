@@ -3,6 +3,7 @@ from datetime import datetime, timedelta, timezone
 from typing import List
 
 import boto3
+from botocore.exceptions import ClientError
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
@@ -90,6 +91,34 @@ def get_today_checkin(userId: str, start: datetime, end: datetime):
         raise HTTPException(status_code=500, detail=f"Failed to check entries: {e}")
 
     return {"completed": bool(response.get("Items"))}
+
+
+@router.put("/{entry_id}", response_model=JournalEntryOut)
+def update_entry(entry_id: str, timestamp: str, entry: JournalEntryIn):
+    try:
+        response = table.update_item(
+            Key={"userId": entry.userId, "timestamp": timestamp},
+            UpdateExpression=(
+                "SET #mood = :mood, moodLabel = :moodLabel, "
+                "moodIcon = :moodIcon, answers = :answers"
+            ),
+            ExpressionAttributeNames={"#mood": "mood"},
+            ExpressionAttributeValues={
+                ":entryId": entry_id,
+                ":mood": entry.mood,
+                ":moodLabel": entry.moodLabel,
+                ":moodIcon": entry.moodIcon,
+                ":answers": entry.answers,
+            },
+            ConditionExpression="entryId = :entryId",
+            ReturnValues="ALL_NEW",
+        )
+    except ClientError as error:
+        if error.response.get("Error", {}).get("Code") == "ConditionalCheckFailedException":
+            raise HTTPException(status_code=404, detail="Entry not found") from error
+        raise HTTPException(status_code=500, detail=f"Failed to update entry: {error}")
+
+    return response["Attributes"]
 
 
 @router.delete("/{entry_id}")

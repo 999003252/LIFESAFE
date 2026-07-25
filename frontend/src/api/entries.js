@@ -35,3 +35,19 @@ export async function createEntry(payload) {
   }
   return res.json()
 }
+
+export async function updateEntry(entryId, timestamp, payload) {
+  const params = new URLSearchParams({ timestamp })
+  const res = await fetch(
+    `${API_BASE}/entries/${encodeURIComponent(entryId)}?${params}`,
+    {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    },
+  )
+  if (!res.ok) {
+    throw new Error('Failed to update entry')
+  }
+  return res.json()
+}
