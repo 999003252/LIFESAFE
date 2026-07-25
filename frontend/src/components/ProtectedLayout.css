@@ -11,8 +11,100 @@
   min-width: 0;
 }
 
+.check-in-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 1.5rem;
+  background: rgba(10, 13, 18, 0.78);
+  backdrop-filter: blur(4px);
+}
+
+.check-in-dialog {
+  width: min(100%, 430px);
+  padding: 2rem;
+  border: 1px solid #2c3542;
+  border-radius: 1.25rem;
+  background: #0f1319;
+  color: #fff;
+  text-align: center;
+  box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, 0.45);
+}
+
+.check-in-icon {
+  font-size: 3rem;
+  color: #ef9011;
+}
+
+.check-in-dialog h2 {
+  margin: 0.75rem 0 0.5rem;
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 2rem;
+  letter-spacing: 0.04rem;
+}
+
+.check-in-dialog p {
+  margin: 0;
+  color: #aab5c4;
+  font-family: "Montserrat", sans-serif;
+  line-height: 1.5;
+}
+
+.check-in-actions {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.check-in-actions button {
+  min-height: 2.75rem;
+  padding: 0.65rem 1.2rem;
+  border-radius: 99px;
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.check-in-later {
+  border: 1px solid #2c3542;
+  background: transparent;
+  color: #aab5c4;
+}
+
+.check-in-start {
+  border: 1px solid #ef9011;
+  background: #ef9011;
+  color: #fff;
+  box-shadow: 0 0 1.5rem rgba(239, 144, 17, 0.2);
+}
+
+.check-in-later:hover,
+.check-in-later:focus-visible {
+  border-color: #78879e;
+  color: #fff;
+}
+
+.check-in-start:hover,
+.check-in-start:focus-visible {
+  background: #d97c0d;
+}
+
 @media (max-width: 900px) {
   .protected-layout {
     flex-direction: column;
+  }
+}
+
+@media (max-width: 480px) {
+  .check-in-actions {
+    flex-direction: column-reverse;
+  }
+
+  .check-in-actions button {
+    width: 100%;
   }
 }

@@ -1,5 +1,6 @@
 import './Entry.css'
 import { useEffect, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 import { getAuth } from '../auth'
 import { createEntry, fetchEntries } from '../api/entries'
 
@@ -54,7 +55,11 @@ const toDisplayEntry = (item) => {
 }
 
 const Entry = () => {
-  const [selectedMood, setSelectedMood] = useState(null)
+  const location = useLocation()
+  const initialMood = moods.some((mood) => mood.id === location.state?.mood)
+    ? location.state.mood
+    : null
+  const [selectedMood, setSelectedMood] = useState(initialMood)
   const [step, setStep] = useState(0)
   const [answers, setAnswers] = useState(['', '', ''])
   const [entries, setEntries] = useState([])

@@ -1,33 +1,30 @@
 import '../pages/Calendar.css'
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { getAuth } from '../auth'
-import { fetchEntries, createEntry } from '../api/entries'
+import { fetchEntries } from '../api/entries'
 
 const MS_PER_WEEK = 7 * 24 * 60 * 60 * 1000
 
-const moodMap = {
-    5: { id: 'veryHappy', label: 'Very Happy', icon: 'sentiment_very_satisfied' },
-    4: { id: 'happy', label: 'Happy', icon: 'sentiment_satisfied' },
-    3: { id: 'neutral', label: 'Neutral', icon: 'sentiment_neutral' },
-    2: { id: 'sad', label: 'Sad', icon: 'sentiment_dissatisfied' },
-    1: { id: 'verySad', label: 'Very Sad', icon: 'sentiment_very_dissatisfied' },
-}
+const moods = [
+    { id: 'veryHappy', label: 'Very Happy', icon: 'sentiment_very_satisfied' },
+    { id: 'happy', label: 'Happy', icon: 'sentiment_satisfied' },
+    { id: 'neutral', label: 'Neutral', icon: 'sentiment_neutral' },
+    { id: 'sad', label: 'Sad', icon: 'sentiment_dissatisfied' },
+    { id: 'verySad', label: 'Very Sad', icon: 'sentiment_very_dissatisfied' },
+]
 
 const CalendarPage = () => {
+    const navigate = useNavigate()
     const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     const monthsOfYear = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-    
-    const [mood, setMood] = useState(3)
 
     const currentDate = new Date();
 
     const [currentMonth, setCurrentMonth] = useState(currentDate.getMonth())
     const [currentYear, setCurrentYear] = useState(currentDate.getFullYear())
-    const [selectedDate, setSelectedDate] = useState(currentDate)
     const[showEventPopup, setShowEventPopup] = useState(false)
-    const [eventText, setEventText] = useState('')
     const [journalEntries, setJournalEntries] = useState([])
-    const [saveError, setSaveError] = useState('')
 
     useEffect(() => {
         fetchEntries(getAuth())
@@ -61,10 +58,8 @@ const CalendarPage = () => {
         const clickedDate = new Date(currentYear, currentMonth, day)
         const today = new Date()
 
-        if (clickedDate >= today || isSameDay(clickedDate, today)) {
-            setSelectedDate(clickedDate)
+        if (isSameDay(clickedDate, today)) {
             setShowEventPopup(true)
-            setEventText('')
         }
     }
 
@@ -76,27 +71,8 @@ const CalendarPage = () => {
         ) 
     }
 
-    const handleEventSubmit = async () => {
-        const moodInfo = moodMap[mood]
-
-        try {
-            const saved = await createEntry({
-                userId: getAuth(),
-                mood: moodInfo.id,
-                moodLabel: moodInfo.label,
-                moodIcon: moodInfo.icon,
-                answers: [eventText],
-            })
-            setJournalEntries([saved, ...journalEntries])
-            setSaveError('')
-        } catch {
-            setSaveError('Could not save entry. Please try again.')
-            return
-        }
-
-        setEventText('')
-        setMood(3)
-        setShowEventPopup(false)
+    const handleMoodSelect = (moodId) => {
+        navigate('/entry', { state: { mood: moodId } })
     }
 
     return (
@@ -145,60 +121,17 @@ const CalendarPage = () => {
     </div>
 
     <div className="mood-selector">
-        <i
-            className={`material-symbols-rounded ${mood === 5 ? 'selected' : ''}`}
-            onClick={() => setMood(5)}
-        >
-            sentiment_very_satisfied
-        </i>
-
-        <i
-            className={`material-symbols-rounded ${mood === 4 ? 'selected' : ''}`}
-            onClick={() => setMood(4)}
-        >
-            sentiment_satisfied
-        </i>
-
-        <i
-            className={`material-symbols-rounded ${mood === 3 ? 'selected' : ''}`}
-            onClick={() => setMood(3)}
-        >
-            sentiment_neutral
-        </i>
-
-        <i
-            className={`material-symbols-rounded ${mood === 2 ? 'selected' : ''}`}
-            onClick={() => setMood(2)}
-        >
-            sentiment_dissatisfied
-        </i>
-
-        <i
-            className={`material-symbols-rounded ${mood === 1 ? 'selected' : ''}`}
-            onClick={() => setMood(1)}
-        >
-            sentiment_very_dissatisfied
-        </i>
+        {moods.map((mood) => (
+            <button
+                type="button"
+                key={mood.id}
+                aria-label={`${mood.label} — open journal`}
+                onClick={() => handleMoodSelect(mood.id)}
+            >
+                <i className="material-symbols-rounded">{mood.icon}</i>
+            </button>
+        ))}
     </div>
-
-    <textarea
-        placeholder="How are you feeling today?"
-        value={eventText}
-        onChange={(e) => {
-            if (e.target.value.length <= 300) {
-                setEventText(e.target.value)
-            }
-        }}
-    ></textarea>
-
-    {saveError && <div className="save-error">{saveError}</div>}
-
-    <button
-        className="event-popup-btn"
-        onClick={handleEventSubmit}
-    >
-        Save Journal Entry
-    </button>
                     <button className="close-event-popup" onClick={() => setShowEventPopup(false)}>
                         <i className="material-symbols-rounded">close</i>
                     </button>

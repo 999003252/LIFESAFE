@@ -1,5 +1,5 @@
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from typing import List
 
 import boto3
@@ -23,6 +23,10 @@ class JournalEntryIn(BaseModel):
 class JournalEntryOut(JournalEntryIn):
     entryId: str
     timestamp: str
+
+
+class CheckInStatus(BaseModel):
+    completed: bool
 
 
 @router.post("", response_model=JournalEntryOut)
@@ -59,6 +63,33 @@ def list_entries(userId: str):
         raise HTTPException(status_code=500, detail=f"Failed to fetch entries: {e}")
 
     return response.get("Items", [])
+
+
+@router.get("/today", response_model=CheckInStatus)
+def get_today_checkin(userId: str, start: datetime, end: datetime):
+    if start.tzinfo is None or end.tzinfo is None or start >= end:
+        raise HTTPException(status_code=400, detail="Invalid local day range")
+
+    start_utc = start.astimezone(timezone.utc).isoformat()
+    end_utc = (
+        end.astimezone(timezone.utc) - timedelta(microseconds=1)
+    ).isoformat()
+
+    try:
+        response = table.query(
+            KeyConditionExpression=(
+                boto3.dynamodb.conditions.Key("userId").eq(userId)
+                & boto3.dynamodb.conditions.Key("timestamp").between(
+                    start_utc, end_utc
+                )
+            ),
+            Limit=1,
+            ProjectionExpression="entryId",
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to check entries: {e}")
+
+    return {"completed": bool(response.get("Items"))}
 
 
 @router.delete("/{entry_id}")

@@ -8,6 +8,22 @@ export async function fetchEntries(userId) {
   return res.json()
 }
 
+export async function fetchTodayCheckIn(userId) {
+  const now = new Date()
+  const start = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+  const end = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1)
+  const params = new URLSearchParams({
+    userId,
+    start: start.toISOString(),
+    end: end.toISOString(),
+  })
+  const res = await fetch(`${API_BASE}/entries/today?${params}`)
+  if (!res.ok) {
+    throw new Error('Failed to check today’s entry')
+  }
+  return res.json()
+}
+
 export async function createEntry(payload) {
   const res = await fetch(`${API_BASE}/entries`, {
     method: 'POST',
