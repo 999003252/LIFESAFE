@@ -1,5 +1,6 @@
 from contextlib import asynccontextmanager
 import logging
+import sys
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -9,12 +10,14 @@ from routers import entries, friends, messages, profile_pictures, realtime, user
 from setup_realtime import setup_realtime
 
 logger = logging.getLogger("uvicorn.error")
+aws_resources_ready = False
 
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
     """Provision required cloud resources before accepting requests."""
-    setup_realtime()
+    if not aws_resources_ready:
+        setup_realtime()
     logger.info("AWS WebSocket resources are ready.")
     table = ensure_journal_entries_table()
     logger.info("DynamoDB table '%s' is ready.", table.name)
@@ -48,4 +51,12 @@ def health_check():
 
 if __name__ == "__main__":
     import uvicorn
+
+    try:
+        setup_realtime()
+    except RuntimeError as error:
+        print(error, file=sys.stderr)
+        raise SystemExit(1) from None
+
+    aws_resources_ready = True
     uvicorn.run(app, host="0.0.0.0", port=8000)

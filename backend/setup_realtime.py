@@ -15,6 +15,9 @@ BACKEND_DIR = Path(__file__).resolve().parent
 ENV_PATH = BACKEND_DIR / ".env"
 TEMPLATE_PATH = BACKEND_DIR / "realtime" / "template.yaml"
 HANDLER_PATH = BACKEND_DIR / "realtime" / "handlers.py"
+LEARNER_TOKEN_URL = (
+    "https://awsacademy.instructure.com/courses/170506/modules/items/16715669"
+)
 
 load_dotenv(ENV_PATH)
 
@@ -176,6 +179,11 @@ def setup_realtime():
             "Outputs"
         ]
     except ClientError as error:
+        error_code = error.response.get("Error", {}).get("Code")
+        if error_code in {"ExpiredToken", "ExpiredTokenException"}:
+            raise RuntimeError(
+                f"Please refresh learner token from {LEARNER_TOKEN_URL}"
+            ) from None
         raise RuntimeError(
             "AWS setup failed. Refresh credentials and verify S3, CloudFormation, "
             "DynamoDB, Lambda, API Gateway, and IAM permissions."
