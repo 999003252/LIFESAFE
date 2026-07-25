@@ -10,7 +10,6 @@ function CreateAccount() {
   const location = useLocation();
 
   const [profileImage, setProfileImage] = useState(null);
-  const [profileImageFile, setProfileImageFile] = useState(null);
 
   const [email, setEmail] = useState(location.state?.email || "");
   const [confirmEmail, setConfirmEmail] = useState("");
@@ -21,12 +20,14 @@ function CreateAccount() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState(""); 
 
+  const [profileFile, setProfileFile] = useState(null);
+
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
-
+  
     if (file) {
+      setProfileFile(file);
       setProfileImage(URL.createObjectURL(file));
-      setProfileImageFile(file);
     }
   };
 
@@ -84,21 +85,26 @@ function CreateAccount() {
         lastName,
       });
     
-      if (profileImageFile) {
-        const imageData = new FormData();
-        imageData.append("email", email);
-        imageData.append("image", profileImageFile);
+      
 
-        const imageResponse = await fetch(`${API_BASE}/profile-pictures`, {
-          method: "POST",
-          body: imageData,
-        });
-
+      if (profileFile) {
+        const formData = new FormData();
+      
+        formData.append("file", profileFile);
+      
+        const imageResponse = await fetch(
+          `${API_BASE}/accounts/profile-picture?email=${encodeURIComponent(email)}`,
+          {
+            method: "POST",
+            body: formData,
+          }
+        );
+        
         if (!imageResponse.ok) {
           throw new Error("Failed to upload profile picture");
         }
       }
-
+      
       alert("Account created successfully!");
       navigate("/login");
     

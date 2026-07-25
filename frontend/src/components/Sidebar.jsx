@@ -9,7 +9,7 @@ export default function Sidebar({ activeItem = 'Calendar' }) {
   const accountRef = useRef(null)
   const navigate = useNavigate()
   const email = getAuth()
-  const displayName = email.split('@')[0] || 'User'
+  const [user, setUser] = useState(null)
 
   const menuItems = [
     { name: 'Calendar', icon: 'calendar_month', path: '/' },
@@ -32,6 +32,19 @@ export default function Sidebar({ activeItem = 'Calendar' }) {
   }
 
   useEffect(() => {
+
+    if (!email) return
+
+    fetch(`http://localhost:8000/accounts?email=${encodeURIComponent(email)}`)
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Sidebar user data:", data)
+        setUser(data)
+      })
+      .catch((error) => {
+        console.error("Failed to load user:", error)
+      })
+
     const handlePointerDown = (event) => {
       if (!accountRef.current?.contains(event.target)) {
         setAccountMenuOpen(false)
@@ -88,10 +101,16 @@ export default function Sidebar({ activeItem = 'Calendar' }) {
           aria-expanded={accountMenuOpen}
           aria-label="Open account menu"
         >
-          <img className="avatar" src="/profile-icon.webp" alt="" />
+          <img
+  className="avatar"
+  src={user?.profileImageUrl || "/profile-icon.webp"}
+  alt="Profile"
+/>
 
           <div className="user-info">
-            <div className="user-name">{displayName}</div>
+          <div className="user-name">
+  {user ? `${user.firstName} ${user.lastName}` : "User"}
+</div>
             <div className="user-email">{email}</div>
           </div>
         </button>
