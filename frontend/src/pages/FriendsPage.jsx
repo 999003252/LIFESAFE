@@ -1,69 +1,169 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { getAuth, getCookieValue, setCookieValue } from "../auth";
+import { fetchFriends, fetchMessages, fetchRealtimeConfig, markFriendRead } from "../api/friends";
 import FriendsList from "../components/FriendsList";
 import ChatWindow from "../components/ChatWindow";
-import WellnessPanel from "../components/WellnessPanel";
 import "./FriendsPage.css";
 
 export default function FriendsPage() {
-  const [selectedFriend, setSelectedFriend] = useState("Sarah");
+  const currentUser = getAuth();
+  const [friends, setFriends] = useState([]);
+  const [selectedFriend, setSelectedFriend] = useState(null);
+  const [conversations, setConversations] = useState({});
+  const [friendsMenuMinimized, setFriendsMenuMinimized] = useState(
+    () => getCookieValue("lifesafe_friends_collapsed") === "true"
+  );
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
+  const socketRef = useRef(null);
+  const selectedFriendRef = useRef(null);
 
-  const [conversations, setConversations] = useState({
-    Sarah: [
-      { sender: "Sarah", text: "Hey! How are you?" },
-      { sender: "You", text: "Doing well!" }
-    ],
-  
-    John: [
-      { sender: "John", text: "Want to grab lunch?" },
-      { sender: "You", text: "Sure!" }
-    ],
-  
-    Mike: [
-      { sender: "Mike", text: "Gym tonight?" },
-      { sender: "You", text: "Absolutely." }
-    ],
-  
-    Emily: [
-      { sender: "Emily", text: "How was your day?" }
-    ],
-  
-    Alex: [
-      { sender: "Alex", text: "Let's catch up soon." }
-    ]
-  });
+  useEffect(() => {
+    selectedFriendRef.current = selectedFriend;
+  }, [selectedFriend]);
+
+  useEffect(() => {
+    let active = true;
+
+    fetchFriends(currentUser)
+      .then((nextFriends) => {
+        if (!active) return;
+        setError("");
+        setFriends(nextFriends);
+        setSelectedFriend((current) => (
+          nextFriends.find((friend) => friend.userId === current?.userId)
+          || nextFriends[0]
+          || null
+        ));
+      })
+      .catch((loadError) => {
+        if (active) setError(loadError.message);
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [currentUser]);
+
+  useEffect(() => {
+    if (!selectedFriend) return;
+
+    fetchMessages(currentUser, selectedFriend.userId)
+      .then((messages) => {
+        setConversations((current) => ({ ...current, [selectedFriend.userId]: messages }));
+        return markFriendRead(currentUser, selectedFriend.userId);
+      })
+      .then(() => setFriends((current) => current.map((friend) => (
+        friend.userId === selectedFriend.userId ? { ...friend, unreadCount: 0 } : friend
+      ))))
+      .catch((loadError) => setError(loadError.message));
+  }, [currentUser, selectedFriend]);
+
+  useEffect(() => {
+    let socket;
+    let reconnectTimer;
+    let stopped = false;
+
+    const connect = async () => {
+      try {
+        const { websocketUrl } = await fetchRealtimeConfig();
+        if (!websocketUrl || stopped) return;
+
+        socket = new WebSocket(`${websocketUrl}?userId=${encodeURIComponent(currentUser)}`);
+        socketRef.current = socket;
+        socket.onmessage = (event) => {
+          const payload = JSON.parse(event.data);
+          if (payload.type !== "message") return;
+
+          const message = payload.message;
+          const friendId = message.senderId === currentUser ? message.recipientId : message.senderId;
+          const isIncoming = message.recipientId === currentUser;
+          const isOpenConversation = selectedFriendRef.current?.userId === friendId;
+          setConversations((current) => {
+            const existing = current[friendId] || [];
+            if (existing.some((item) => item.messageId === message.messageId)) return current;
+            return { ...current, [friendId]: [...existing, message] };
+          });
+          setFriends((current) => current.map((friend) => (
+            friend.userId === friendId
+              ? {
+                ...friend,
+                lastMessagePreview: message.text,
+                lastMessageAt: message.sentAt,
+                unreadCount: isIncoming && !isOpenConversation ? (friend.unreadCount || 0) + 1 : 0,
+              }
+              : friend
+          )));
+          if (isIncoming && isOpenConversation) {
+            markFriendRead(currentUser, friendId).catch(() => {});
+          }
+        };
+        socket.onclose = () => {
+          if (!stopped) reconnectTimer = window.setTimeout(connect, 2000);
+        };
+      } catch {
+        if (!stopped) reconnectTimer = window.setTimeout(connect, 4000);
+      }
+    };
+
+    connect();
+    return () => {
+      stopped = true;
+      window.clearTimeout(reconnectTimer);
+      socket?.close();
+    };
+  }, [currentUser]);
 
   const sendMessage = (text) => {
-    if (!text.trim()) return;
-  
-    setConversations((prev) => ({
-      ...prev,
-  
-      [selectedFriend]: [
-        ...prev[selectedFriend],
-  
-        {
-          sender: "You",
-          text: text,
-        },
-      ],
+    if (!selectedFriend || socketRef.current?.readyState !== WebSocket.OPEN) {
+      setError("Messaging is reconnecting. Please try again.");
+      return false;
+    }
+
+    socketRef.current.send(JSON.stringify({
+      action: "sendMessage",
+      recipientId: selectedFriend.userId,
+      text,
     }));
+    return true;
+  };
+
+  const handleFriendAdded = (friend) => {
+    setFriends((current) => [...current, { ...friend, lastMessagePreview: "No messages yet", unreadCount: 0 }]);
+    setSelectedFriend(friend);
+  };
+
+  const toggleFriendsMenu = () => {
+    setFriendsMenuMinimized((current) => {
+      const next = !current;
+      setCookieValue("lifesafe_friends_collapsed", String(next));
+      return next;
+    });
   };
 
   return (
-    <div className="friends-page">
+    <div className={`friends-page ${friendsMenuMinimized ? "friends-menu-minimized" : ""}`}>
       <FriendsList
-  selectedFriend={selectedFriend}
-  setSelectedFriend={setSelectedFriend}
-  conversations={conversations}
-/>
+        currentUser={currentUser}
+        friends={friends}
+        selectedFriend={selectedFriend}
+        setSelectedFriend={setSelectedFriend}
+        isCollapsed={friendsMenuMinimized}
+        onToggleCollapsed={toggleFriendsMenu}
+        onFriendAdded={handleFriendAdded}
+      />
 
-        <ChatWindow
+      <ChatWindow
         friend={selectedFriend}
-        messages={conversations[selectedFriend]}
+        messages={selectedFriend ? conversations[selectedFriend.userId] || [] : []}
+        currentUser={currentUser}
+        loading={loading}
+        error={error}
         sendMessage={sendMessage}
-        />
-
-      <WellnessPanel friend={selectedFriend} />
+      />
     </div>
   );
 }

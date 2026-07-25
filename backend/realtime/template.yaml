@@ -1,0 +1,168 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Lifesafe real-time messaging resources
+
+Parameters:
+  ArtifactBucket:
+    Type: String
+  ArtifactKey:
+    Type: String
+  UserProfilesTableName:
+    Type: String
+    Default: LifesafeUserProfiles
+  UserSearchTableName:
+    Type: String
+    Default: LifesafeUserSearch
+  FriendshipsTableName:
+    Type: String
+    Default: LifesafeFriendships
+  MessagesTableName:
+    Type: String
+    Default: LifesafeMessages
+  ConnectionsTableName:
+    Type: String
+    Default: LifesafeWebSocketConnections
+  ExistingLambdaRoleArn:
+    Type: String
+
+Resources:
+  RealtimeFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Runtime: python3.12
+      Handler: handlers.send_message
+      Role: !Ref ExistingLambdaRoleArn
+      Timeout: 15
+      Code:
+        S3Bucket: !Ref ArtifactBucket
+        S3Key: !Ref ArtifactKey
+      Environment:
+        Variables:
+          FRIENDSHIPS_TABLE_NAME: !Ref FriendshipsTableName
+          MESSAGES_TABLE_NAME: !Ref MessagesTableName
+          CONNECTIONS_TABLE_NAME: !Ref ConnectionsTableName
+
+  ConnectFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Runtime: python3.12
+      Handler: handlers.connect
+      Role: !Ref ExistingLambdaRoleArn
+      Timeout: 15
+      Code:
+        S3Bucket: !Ref ArtifactBucket
+        S3Key: !Ref ArtifactKey
+      Environment:
+        Variables:
+          FRIENDSHIPS_TABLE_NAME: !Ref FriendshipsTableName
+          MESSAGES_TABLE_NAME: !Ref MessagesTableName
+          CONNECTIONS_TABLE_NAME: !Ref ConnectionsTableName
+
+  DisconnectFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Runtime: python3.12
+      Handler: handlers.disconnect
+      Role: !Ref ExistingLambdaRoleArn
+      Timeout: 15
+      Code:
+        S3Bucket: !Ref ArtifactBucket
+        S3Key: !Ref ArtifactKey
+      Environment:
+        Variables:
+          FRIENDSHIPS_TABLE_NAME: !Ref FriendshipsTableName
+          MESSAGES_TABLE_NAME: !Ref MessagesTableName
+          CONNECTIONS_TABLE_NAME: !Ref ConnectionsTableName
+
+  WebSocketApi:
+    Type: AWS::ApiGatewayV2::Api
+    Properties:
+      Name: LifesafeRealtime
+      ProtocolType: WEBSOCKET
+      RouteSelectionExpression: '$request.body.action'
+
+  ConnectIntegration:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId: !Ref WebSocketApi
+      IntegrationType: AWS_PROXY
+      IntegrationUri: !Sub 'arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ConnectFunction.Arn}/invocations'
+
+  DisconnectIntegration:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId: !Ref WebSocketApi
+      IntegrationType: AWS_PROXY
+      IntegrationUri: !Sub 'arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${DisconnectFunction.Arn}/invocations'
+
+  SendMessageIntegration:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId: !Ref WebSocketApi
+      IntegrationType: AWS_PROXY
+      IntegrationUri: !Sub 'arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${RealtimeFunction.Arn}/invocations'
+
+  ConnectRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref WebSocketApi
+      RouteKey: $connect
+      AuthorizationType: NONE
+      Target: !Join ['/', ['integrations', !Ref ConnectIntegration]]
+
+  DisconnectRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref WebSocketApi
+      RouteKey: $disconnect
+      AuthorizationType: NONE
+      Target: !Join ['/', ['integrations', !Ref DisconnectIntegration]]
+
+  SendMessageRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref WebSocketApi
+      RouteKey: sendMessage
+      AuthorizationType: NONE
+      Target: !Join ['/', ['integrations', !Ref SendMessageIntegration]]
+
+  WebSocketStage:
+    Type: AWS::ApiGatewayV2::Stage
+    Properties:
+      ApiId: !Ref WebSocketApi
+      StageName: prod
+      AutoDeploy: true
+
+  ConnectPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref ConnectFunction
+      Principal: apigateway.amazonaws.com
+
+  DisconnectPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref DisconnectFunction
+      Principal: apigateway.amazonaws.com
+
+  SendMessagePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref RealtimeFunction
+      Principal: apigateway.amazonaws.com
+
+Outputs:
+  WebSocketUrl:
+    Value: !Sub 'wss://${WebSocketApi}.execute-api.${AWS::Region}.amazonaws.com/prod'
+  UserProfilesTableName:
+    Value: !Ref UserProfilesTableName
+  UserSearchTableName:
+    Value: !Ref UserSearchTableName
+  FriendshipsTableName:
+    Value: !Ref FriendshipsTableName
+  MessagesTableName:
+    Value: !Ref MessagesTableName
+  ConnectionsTableName:
+    Value: !Ref ConnectionsTableName

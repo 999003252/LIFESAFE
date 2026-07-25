@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import InputField from '../components/InputField'
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000'
@@ -8,6 +8,7 @@ const Login = () => {
   const [email, setEmail] = useState('')
   const [error, setError] = useState('')
   const navigate = useNavigate()
+  const location = useLocation()
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -53,12 +54,14 @@ const Login = () => {
         </form>
 
         <p className="create-account-link">
-          Don't have an account?{" "}
-          <Link to="/create-account">Create one here</Link>
-        </p>    
+          New to lifesafe? <Link to="/create-account">Create an account</Link>
+        </p>
 
         <p className="signup-text fine-print">
-          By clicking continue, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+          By clicking continue, you agree to our{' '}
+          <Link to="/terms" state={{ from: location.pathname }}>Terms of Service</Link>{' '}
+          and{' '}
+          <Link to="/privacy" state={{ from: location.pathname }}>Privacy Policy</Link>
         </p>
       </div>
     </div>

@@ -1,70 +1,115 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import AddFriendModal from "./AddFriendModal";
 import "./Friends.css";
 
-const friends = [
-  "Sarah",
-  "John",
-  "Mike",
-  "Emily",
-  "Alex"
-];
+function initials(name) {
+  return name.split(" ").map((part) => part[0]).join("").slice(0, 2).toUpperCase();
+}
+
+function FriendAvatar({ friend }) {
+  if (friend.profilePictureUrl) {
+    return <img className="avatar" src={friend.profilePictureUrl} alt="" />;
+  }
+
+  return <span className="avatar" aria-hidden="true">{initials(friend.displayName)}</span>;
+}
 
 export default function FriendsList({
+  currentUser,
+  friends,
   selectedFriend,
   setSelectedFriend,
-  conversations
+  isCollapsed,
+  onToggleCollapsed,
+  onFriendAdded,
 }) {
-
   const [showModal, setShowModal] = useState(false);
+  const [query, setQuery] = useState("");
+  const visibleFriends = useMemo(
+    () => friends.filter((friend) => friend.displayName.toLowerCase().includes(query.trim().toLowerCase())),
+    [friends, query]
+  );
 
   return (
-    <div className="friends-list">
-
+    <div className={`friends-list ${isCollapsed ? "is-collapsed" : ""}`}>
       <div className="friends-header">
         <h2>Friends</h2>
 
-        <button onClick={() => setShowModal(true)}>
-          +
-        </button>
+        <div className="friends-actions">
+          <button
+            type="button"
+            className="friends-toggle"
+            onClick={onToggleCollapsed}
+            aria-label={isCollapsed ? "Expand friends menu" : "Minimize friends menu"}
+            title={isCollapsed ? "Expand friends menu" : "Minimize friends menu"}
+          >
+            {isCollapsed ? "›" : "‹"}
+          </button>
+
+          {!isCollapsed && (
+            <button type="button" className="add-friend" onClick={() => setShowModal(true)} aria-label="Add friend">+</button>
+          )}
+        </div>
       </div>
 
-      <input
-        className="search-bar"
-        type="text"
-        placeholder="Search friends..."
-      />
+      {!isCollapsed && (
+        <>
+          <input
+            className="search-bar"
+            type="search"
+            placeholder="Search friends"
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+          />
 
-      {friends.map((friend) => (
-        <div
-          key={friend}
-          className={`friend-card ${
-            selectedFriend === friend ? "active" : ""
-          }`}
-          onClick={() => setSelectedFriend(friend)}
-        >
-          <div className="avatar"></div>
+          <div className="friends-results">
+            {visibleFriends.map((friend) => (
+              <button
+                type="button"
+                key={friend.userId}
+                className={`friend-card ${selectedFriend?.userId === friend.userId ? "active" : ""}`}
+                onClick={() => setSelectedFriend(friend)}
+              >
+                <FriendAvatar friend={friend} />
+                <div className="friend-info">
+                  <h4>{friend.displayName}</h4>
+                  <p>{friend.lastMessagePreview || "No messages yet"}</p>
+                </div>
+                {!!friend.unreadCount && <i className="material-symbols-rounded unread-bell" aria-label={`${friend.unreadCount} unread messages`}>notifications</i>}
+              </button>
+            ))}
 
-        <div className="friend-info">
-            <h4>{friend}</h4>
-            <p>
-  {
-    conversations[friend][conversations[friend].length - 1]
-      .text.slice(0, 30)
-  }
-  {conversations[friend][conversations[friend].length - 1]
-    .text.length > 30 && "..."}
-</p>
+            {!friends.length && <p className="friends-empty">Add a registered user to start a conversation.</p>}
+            {!!friends.length && !visibleFriends.length && <p className="friends-empty">No friends match that search.</p>}
+          </div>
+        </>
+      )}
+
+      {isCollapsed && (
+        <div className="collapsed-friends">
+          {friends.map((friend) => (
+            <button
+              type="button"
+              key={friend.userId}
+              className={`collapsed-friend ${selectedFriend?.userId === friend.userId ? "active" : ""}`}
+              onClick={() => setSelectedFriend(friend)}
+              title={friend.displayName}
+              aria-label={`Open conversation with ${friend.displayName}`}
+            >
+              <FriendAvatar friend={friend} />
+              {!!friend.unreadCount && <i className="material-symbols-rounded unread-bell" aria-label={`${friend.unreadCount} unread messages`}>notifications</i>}
+            </button>
+          ))}
         </div>
-        </div>
-      ))}
+      )}
 
       {showModal && (
         <AddFriendModal
+          currentUser={currentUser}
+          onAdded={onFriendAdded}
           onClose={() => setShowModal(false)}
         />
       )}
-
     </div>
   );
 }

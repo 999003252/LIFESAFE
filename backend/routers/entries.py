@@ -1,8 +1,9 @@
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from typing import List
 
 import boto3
+from botocore.exceptions import ClientError
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
@@ -23,6 +24,10 @@ class JournalEntryIn(BaseModel):
 class JournalEntryOut(JournalEntryIn):
     entryId: str
     timestamp: str
+
+
+class CheckInStatus(BaseModel):
+    completed: bool
 
 
 @router.post("", response_model=JournalEntryOut)
@@ -59,6 +64,61 @@ def list_entries(userId: str):
         raise HTTPException(status_code=500, detail=f"Failed to fetch entries: {e}")
 
     return response.get("Items", [])
+
+
+@router.get("/today", response_model=CheckInStatus)
+def get_today_checkin(userId: str, start: datetime, end: datetime):
+    if start.tzinfo is None or end.tzinfo is None or start >= end:
+        raise HTTPException(status_code=400, detail="Invalid local day range")
+
+    start_utc = start.astimezone(timezone.utc).isoformat()
+    end_utc = (
+        end.astimezone(timezone.utc) - timedelta(microseconds=1)
+    ).isoformat()
+
+    try:
+        response = table.query(
+            KeyConditionExpression=(
+                boto3.dynamodb.conditions.Key("userId").eq(userId)
+                & boto3.dynamodb.conditions.Key("timestamp").between(
+                    start_utc, end_utc
+                )
+            ),
+            Limit=1,
+            ProjectionExpression="entryId",
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to check entries: {e}")
+
+    return {"completed": bool(response.get("Items"))}
+
+
+@router.put("/{entry_id}", response_model=JournalEntryOut)
+def update_entry(entry_id: str, timestamp: str, entry: JournalEntryIn):
+    try:
+        response = table.update_item(
+            Key={"userId": entry.userId, "timestamp": timestamp},
+            UpdateExpression=(
+                "SET #mood = :mood, moodLabel = :moodLabel, "
+                "moodIcon = :moodIcon, answers = :answers"
+            ),
+            ExpressionAttributeNames={"#mood": "mood"},
+            ExpressionAttributeValues={
+                ":entryId": entry_id,
+                ":mood": entry.mood,
+                ":moodLabel": entry.moodLabel,
+                ":moodIcon": entry.moodIcon,
+                ":answers": entry.answers,
+            },
+            ConditionExpression="entryId = :entryId",
+            ReturnValues="ALL_NEW",
+        )
+    except ClientError as error:
+        if error.response.get("Error", {}).get("Code") == "ConditionalCheckFailedException":
+            raise HTTPException(status_code=404, detail="Entry not found") from error
+        raise HTTPException(status_code=500, detail=f"Failed to update entry: {error}")
+
+    return response["Attributes"]
 
 
 @router.delete("/{entry_id}")

@@ -1,5 +1,41 @@
 .friends-page {
-    display: flex;
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr);
+  min-height: 100vh;
+  background: #1e242d;
+}
+
+@media (min-width: 901px) {
+  .friends-page,
+  .friends-page .chat-window {
     height: 100vh;
-    background-color: #1e242d;
   }
+
+  .friends-page {
+    overflow: hidden;
+  }
+}
+
+.friends-page.friends-menu-minimized {
+  grid-template-columns: 64px minmax(0, 1fr);
+}
+
+@media (max-width: 1100px) {
+  .friends-page {
+    grid-template-columns: 240px minmax(0, 1fr);
+  }
+
+  .friends-page.friends-menu-minimized {
+    grid-template-columns: 64px minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 900px) {
+  .friends-page {
+    grid-template-columns: 1fr;
+  }
+
+  .friends-page.friends-menu-minimized {
+    grid-template-columns: 1fr;
+  }
+}

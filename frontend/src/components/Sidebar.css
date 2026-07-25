@@ -91,8 +91,8 @@
     border-left: 4px solid #ef9011;
   }
 
-  .sidebar.collapsed .menu-item.active {
-    border-left-width: 4px;
+.sidebar.collapsed .menu-item.active {
+    border-left-color: transparent;
   }
   
   .sidebar .menu-item i {

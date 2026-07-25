@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { upsertProfile } from "../api/friends";
 import "../pages/CreateAccount.css";
 
 const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8000";
@@ -9,6 +10,7 @@ function CreateAccount() {
   const location = useLocation();
 
   const [profileImage, setProfileImage] = useState(null);
+  const [profileImageFile, setProfileImageFile] = useState(null);
 
   const [email, setEmail] = useState(location.state?.email || "");
   const [confirmEmail, setConfirmEmail] = useState("");
@@ -24,6 +26,7 @@ function CreateAccount() {
 
     if (file) {
       setProfileImage(URL.createObjectURL(file));
+      setProfileImageFile(file);
     }
   };
 
@@ -74,7 +77,28 @@ function CreateAccount() {
         const accountData = await accountResponse.json();
         throw new Error(accountData.detail || "Could not finish creating your account.");
       }
+
+      await upsertProfile({
+        email,
+        firstName,
+        lastName,
+      });
     
+      if (profileImageFile) {
+        const imageData = new FormData();
+        imageData.append("email", email);
+        imageData.append("image", profileImageFile);
+
+        const imageResponse = await fetch(`${API_BASE}/profile-pictures`, {
+          method: "POST",
+          body: imageData,
+        });
+
+        if (!imageResponse.ok) {
+          throw new Error("Failed to upload profile picture");
+        }
+      }
+
       alert("Account created successfully!");
       navigate("/login");
     
@@ -87,6 +111,15 @@ function CreateAccount() {
   return (
     <div className="create-account-page">
       <div className="create-account-card">
+        <button
+          type="button"
+          className="back-button"
+          onClick={() => navigate("/login")}
+        >
+          <span aria-hidden="true">←</span>
+          Back to Login
+        </button>
+
         <h1>Create Account</h1>
 
         <p className="subtitle">

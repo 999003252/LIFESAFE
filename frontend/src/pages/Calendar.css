@@ -162,56 +162,6 @@ body {
     letter-spacing: 0.1rem;
 }
 
-.event-popup textarea {
-    width: 100%;
-    min-height: 140px;
-    resize: vertical;
-    background-color: #161b22;
-    border: 1px solid #222b36;
-    padding: 1rem;
-    border-radius: 0.75rem;
-    color: #78879e;
-    transition: border-color 0.2s;
-    font-family: 'Montserrat', sans-serif;
-}
-
-.event-popup textarea:focus {
-    outline: none;
-    border-color: #ef9011;
-}
-
-.event-popup textarea::placeholder{
-    font-size: clamp(0.85rem, 2vw, 1.2rem);
-    color: #78879e;
-}
-
-.event-popup textarea:focus::placeholder {
-    color: transparent;
-}
-
-.save-error {
-    color: #c0392b;
-    font-size: 0.85rem;
-}
-
-.event-popup-btn {
-    width: 100%;
-    min-height: 3rem;
-    background-color: #ef9011;
-    color: #fff;
-    font-size: 0.85rem;
-    font-weight: 700;
-    border: none;
-    border-radius: 99px;
-    box-shadow: 0 0 1.5rem 0.3rem rgba(239, 144, 17, 0.15);
-    cursor: pointer;
-    font-family: 'Montserrat', sans-serif;
-}
-
-.event-popup-btn:active {
-    transform: translateY(0.1rem);
-}
-
 .close-event-popup {
     position: absolute;
     top: 1rem;
@@ -305,19 +255,29 @@ body {
     flex-wrap: wrap;
 }
 
-.mood-selector i {
-    font-size: clamp(1.8rem, 5vw, 3rem);
+.mood-selector button {
+    display: grid;
+    place-items: center;
+    padding: 0.55rem;
+    border: 1px solid transparent;
+    border-radius: 0.75rem;
+    background: transparent;
     color: #78879e;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: color 0.15s, border-color 0.15s, background 0.15s, transform 0.15s;
 }
 
-.mood-selector i:hover {
-    transform: scale(1.15);
+.mood-selector button i {
+    font-size: clamp(1.8rem, 5vw, 3rem);
 }
 
-.mood-selector i.selected {
+.mood-selector button:hover,
+.mood-selector button:focus-visible {
     color: #ef9011;
+    border-color: #ef9011;
+    background: #161b22;
+    transform: scale(1.15);
+    outline: none;
 }
 
 .tracking-stats {

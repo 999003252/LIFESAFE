@@ -1,12 +1,18 @@
 import { useState } from "react";
 import "./MessageInput.css";
 
-export default function MessageInput({ sendMessage }) {
+export default function MessageInput({ sendMessage, disabled }) {
   const [text, setText] = useState("");
 
   const handleSend = () => {
-    sendMessage(text);
-    setText("");
+    if (text.trim() && sendMessage(text)) setText("");
+  };
+
+  const handleKeyDown = (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      handleSend();
+    }
   };
 
   return (
@@ -16,9 +22,11 @@ export default function MessageInput({ sendMessage }) {
         placeholder="Type a message..."
         value={text}
         onChange={(e) => setText(e.target.value)}
+        onKeyDown={handleKeyDown}
+        disabled={disabled}
       />
 
-      <button onClick={handleSend}>
+      <button type="button" onClick={handleSend} disabled={disabled}>
         Send
       </button>
     </div>
