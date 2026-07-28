@@ -10,7 +10,16 @@ from database import (
     ensure_journal_entries_table,
     ensure_social_tables,
 )
-from routers import accounts, entries, friends, messages, profile_pictures, realtime, users
+from routers import (
+    accounts,
+    ai_support,
+    entries,
+    friends,
+    messages,
+    profile_pictures,
+    realtime,
+    users,
+)
 from setup_realtime import setup_realtime
 
 logger = logging.getLogger("uvicorn.error")
@@ -47,6 +56,7 @@ app.include_router(accounts.router)
 app.include_router(users.router)
 app.include_router(friends.router)
 app.include_router(messages.router)
+app.include_router(ai_support.router)
 app.include_router(realtime.router)
 app.include_router(profile_pictures.router)
 

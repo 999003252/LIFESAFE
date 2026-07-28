@@ -1,3 +1,5 @@
+import { consumeNdjsonStream } from './streaming'
+
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 
 async function request(path, options) {
@@ -57,4 +59,32 @@ export function fetchMessages(userId, friendId) {
 
 export function fetchRealtimeConfig() {
   return request('/realtime/config')
+}
+
+export async function streamAiMessage(userId, text, onEvent) {
+  const response = await fetch(`${API_BASE}/ai-support/stream`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ userId, text }),
+  })
+
+  if (!response.ok) {
+    const data = await response.json().catch(() => ({}))
+    throw new Error(data.detail || 'Therapist could not start a response.')
+  }
+  if (!response.body) {
+    throw new Error('Streaming is not supported by this browser.')
+  }
+
+  let terminalEventReceived = false
+  await consumeNdjsonStream(response.body, (event) => {
+    if (['aiMessageCompleted', 'aiMessageError', 'messageError'].includes(event.type)) {
+      terminalEventReceived = true
+    }
+    onEvent(event)
+  })
+
+  if (!terminalEventReceived) {
+    throw new Error('Therapist response ended unexpectedly. Please try again.')
+  }
 }

@@ -15,6 +15,7 @@ BACKEND_DIR = Path(__file__).resolve().parent
 ENV_PATH = BACKEND_DIR / ".env"
 TEMPLATE_PATH = BACKEND_DIR / "realtime" / "template.yaml"
 HANDLER_PATH = BACKEND_DIR / "realtime" / "handlers.py"
+AI_SUPPORT_PATH = BACKEND_DIR / "ai_support.py"
 LEARNER_TOKEN_URL = (
     "https://awsacademy.instructure.com/courses/170506/modules/items/16715669"
 )
@@ -66,6 +67,7 @@ def upload_handler(s3, bucket: str) -> str:
     archive = io.BytesIO()
     with zipfile.ZipFile(archive, "w", zipfile.ZIP_DEFLATED) as zip_file:
         zip_file.write(HANDLER_PATH, "handlers.py")
+        zip_file.write(AI_SUPPORT_PATH, "ai_support.py")
 
     contents = archive.getvalue()
     key = f"lifesafe-realtime/handlers-{hashlib.sha256(contents).hexdigest()[:12]}.zip"

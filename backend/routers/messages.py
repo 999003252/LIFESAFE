@@ -3,6 +3,7 @@ import hashlib
 import boto3
 from fastapi import APIRouter, HTTPException
 
+from ai_support import AI_SUPPORT_ID
 from database import FRIENDSHIPS_TABLE, MESSAGES_TABLE
 from routers.users import normalize_user_id
 
@@ -26,7 +27,7 @@ def list_messages(userId: str, friendId: str):
     user_id = normalize_user_id(userId)
     friend_id = normalize_user_id(friendId)
 
-    if not are_friends(user_id, friend_id):
+    if friend_id != AI_SUPPORT_ID and not are_friends(user_id, friend_id):
         raise HTTPException(status_code=403, detail="You can only message friends.")
 
     try:

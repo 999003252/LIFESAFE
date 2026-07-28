@@ -7,6 +7,14 @@ function initials(name) {
 }
 
 function FriendAvatar({ friend }) {
+  if (friend.isAi) {
+    return (
+      <span className="avatar ai-avatar" aria-hidden="true">
+        <i className="material-symbols-rounded">psychology</i>
+      </span>
+    );
+  }
+
   if (friend.profilePictureUrl) {
     return <img className="avatar" src={friend.profilePictureUrl} alt="" />;
   }
@@ -33,7 +41,7 @@ export default function FriendsList({
   return (
     <div className={`friends-list ${isCollapsed ? "is-collapsed" : ""}`}>
       <div className="friends-header">
-        <h2>Friends</h2>
+        <h2>Messages</h2>
 
         <div className="friends-actions">
           <button
@@ -57,7 +65,7 @@ export default function FriendsList({
           <input
             className="search-bar"
             type="search"
-            placeholder="Search friends"
+            placeholder="Search contacts"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
           />
@@ -73,6 +81,7 @@ export default function FriendsList({
                 <FriendAvatar friend={friend} />
                 <div className="friend-info">
                   <h4>{friend.displayName}</h4>
+                  {friend.isAi && <span className="ai-label">AI</span>}
                   <p>{friend.lastMessagePreview || "No messages yet"}</p>
                 </div>
                 {!!friend.unreadCount && <i className="material-symbols-rounded unread-bell" aria-label={`${friend.unreadCount} unread messages`}>notifications</i>}

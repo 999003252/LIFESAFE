@@ -1,10 +1,12 @@
+import hashlib
 from datetime import datetime, timezone
 
 import boto3
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
-from database import FRIENDSHIPS_TABLE, dynamodb
+from ai_support import AI_SUPPORT_ID, ai_support_contact
+from database import FRIENDSHIPS_TABLE, MESSAGES_TABLE, dynamodb
 from routers.users import get_profile, normalize_user_id, profile_response
 
 router = APIRouter(prefix="/friends", tags=["friends"])
@@ -30,13 +32,25 @@ def friendship_exists(user_id: str, friend_id: str) -> bool:
 def list_friends(userId: str):
     user_id = normalize_user_id(userId)
     try:
+        ai_messages = MESSAGES_TABLE.query(
+            KeyConditionExpression=boto3.dynamodb.conditions.Key("conversationId").eq(
+                hashlib.sha256(
+                    ":".join(sorted([user_id, AI_SUPPORT_ID])).encode("utf-8")
+                ).hexdigest()
+            ),
+            ScanIndexForward=False,
+            Limit=1,
+        )
+        support = ai_support_contact(
+            (ai_messages.get("Items") or [None])[0]
+        )
         response = FRIENDSHIPS_TABLE.query(
             KeyConditionExpression=boto3.dynamodb.conditions.Key("userId").eq(user_id)
         )
         friendships = response.get("Items", [])
         friend_ids = [friendship["friendId"] for friendship in friendships]
         if not friend_ids:
-            return []
+            return [support]
 
         friendship_by_id = {friendship["friendId"]: friendship for friendship in friendships}
 
@@ -54,7 +68,7 @@ def list_friends(userId: str):
                         "unreadCount": friendship_by_id[friend_id].get("unreadCount", 0),
                     }
                 )
-        return friends
+        return [support, *friends]
     except Exception as error:
         raise HTTPException(status_code=500, detail="Could not load friends.") from error
 
@@ -120,6 +134,9 @@ def add_friend(friendship: FriendIn):
 def mark_friend_read(friendship: FriendReadIn):
     user_id = normalize_user_id(friendship.userId)
     friend_id = normalize_user_id(friendship.friendId)
+
+    if friend_id == AI_SUPPORT_ID:
+        return {"status": "read"}
 
     if not friendship_exists(user_id, friend_id):
         raise HTTPException(status_code=404, detail="That friend connection could not be found.")

@@ -3,7 +3,7 @@ from pydantic import BaseModel
 import boto3
 import uuid
 
-from database import ACCOUNTS_TABLE
+from database import ACCOUNTS_TABLE, USER_PROFILES_TABLE
 
 router = APIRouter(prefix="/accounts", tags=["accounts"])
 s3 = boto3.client("s3")
@@ -50,14 +50,33 @@ def create_account(account: AccountIn):
 
 @router.get("/exists")
 def account_exists(email: str):
-    item = ACCOUNTS_TABLE.get_item(Key={"email": normalize_email(email)}).get("Item")
-    return {"exists": item is not None}
+    normalized_email = normalize_email(email)
+    account = ACCOUNTS_TABLE.get_item(Key={"email": normalized_email}).get("Item")
+    if account is not None:
+        return {"exists": True}
+
+    profile = USER_PROFILES_TABLE.get_item(
+        Key={"userId": normalized_email}
+    ).get("Item")
+    return {"exists": profile is not None}
+
 
 @router.get("")
 def get_account(email: str):
-    item = ACCOUNTS_TABLE.get_item(
-        Key={"email": normalize_email(email)}
-    ).get("Item")
+    normalized_email = normalize_email(email)
+    item = ACCOUNTS_TABLE.get_item(Key={"email": normalized_email}).get("Item")
+
+    if item is None:
+        profile = USER_PROFILES_TABLE.get_item(
+            Key={"userId": normalized_email}
+        ).get("Item")
+        if profile is not None:
+            item = {
+                "email": profile["userId"],
+                "firstName": profile["firstName"],
+                "lastName": profile.get("lastName", ""),
+                "profileImageKey": profile.get("profilePictureKey"),
+            }
 
     if item is None:
         raise HTTPException(status_code=404, detail="Account not found.")
