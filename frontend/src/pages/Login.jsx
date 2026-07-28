@@ -27,7 +27,7 @@ const Login = () => {
       }
 
       setError('')
-      navigate('/otp', { state: { email: email.trim() } })
+      navigate('/password-login', { state: { email: email.trim() } })
     } catch {
       setError('Could not check this account. Please try again.')
     }
