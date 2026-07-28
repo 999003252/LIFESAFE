@@ -24,6 +24,7 @@ export default function FriendsPage() {
   const [aiSending, setAiSending] = useState(false);
   const socketRef = useRef(null);
   const selectedFriendRef = useRef(null);
+  const pendingAiMessageRef = useRef(null);
 
   useEffect(() => {
     selectedFriendRef.current = selectedFriend;
@@ -72,6 +73,16 @@ export default function FriendsPage() {
   const handleMessagePayload = useCallback((payload) => {
     if (payload.type === "messageError" || payload.type === "aiMessageError") {
       setAiSending(false);
+      if (payload.type === "messageError" && pendingAiMessageRef.current) {
+        const pending = pendingAiMessageRef.current;
+        pendingAiMessageRef.current = null;
+        setConversations((current) => ({
+          ...current,
+          [pending.friendId]: (current[pending.friendId] || []).filter(
+            (message) => message.messageId !== pending.messageId
+          ),
+        }));
+      }
       if (payload.type === "aiMessageError") {
         setConversations((current) => {
           const existing = current[payload.friendId] || [];
@@ -142,8 +153,26 @@ export default function FriendsPage() {
     const friendId = message.senderId === currentUser ? message.recipientId : message.senderId;
     const isIncoming = message.recipientId === currentUser;
     const isOpenConversation = selectedFriendRef.current?.userId === friendId;
+    const pending = pendingAiMessageRef.current;
+    const replacesPending = (
+      pending
+      && pending.friendId === friendId
+      && message.senderId === currentUser
+      && message.text === pending.text
+    );
+    if (replacesPending) pendingAiMessageRef.current = null;
     setConversations((current) => {
       const existing = current[friendId] || [];
+      if (replacesPending) {
+        return {
+          ...current,
+          [friendId]: existing.some((item) => item.messageId === pending.messageId)
+            ? existing.map((item) => (
+              item.messageId === pending.messageId ? message : item
+            ))
+            : [...existing, message],
+        };
+      }
       if (existing.some((item) => item.messageId === message.messageId)) return current;
       return { ...current, [friendId]: [...existing, message] };
     });
@@ -201,14 +230,38 @@ export default function FriendsPage() {
     }
 
     if (selectedFriend.isAi) {
+      const friendId = selectedFriend.userId;
+      const optimisticMessage = {
+        messageId: `pending-${crypto.randomUUID()}`,
+        senderId: currentUser,
+        recipientId: friendId,
+        text,
+        sentAt: new Date().toISOString(),
+        pending: true,
+      };
+      pendingAiMessageRef.current = {
+        friendId,
+        messageId: optimisticMessage.messageId,
+        text,
+      };
+      setConversations((current) => ({
+        ...current,
+        [friendId]: [...(current[friendId] || []), optimisticMessage],
+      }));
       setError("");
       setAiSending(true);
       streamAiMessage(currentUser, text, handleMessagePayload).catch((streamError) => {
         setAiSending(false);
+        if (pendingAiMessageRef.current?.messageId === optimisticMessage.messageId) {
+          pendingAiMessageRef.current = null;
+        }
         setConversations((current) => ({
           ...current,
-          [selectedFriend.userId]: (current[selectedFriend.userId] || []).filter(
-            (message) => !message.streaming
+          [friendId]: (current[friendId] || []).filter(
+            (message) => (
+              message.messageId !== optimisticMessage.messageId
+              && !message.streaming
+            )
           ),
         }));
         setError(streamError.message || "Therapist could not respond.");
