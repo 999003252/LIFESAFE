@@ -8,6 +8,8 @@ import boto3
 from boto3.dynamodb.conditions import Key
 from botocore.exceptions import ClientError
 
+from ai_support import AI_SUPPORT_ID
+
 dynamodb = boto3.resource("dynamodb")
 connections = dynamodb.Table(os.environ["CONNECTIONS_TABLE_NAME"])
 friendships = dynamodb.Table(os.environ["FRIENDSHIPS_TABLE_NAME"])
@@ -28,6 +30,19 @@ def normalize_user_id(value):
 def conversation_id(user_id, friend_id):
     participants = ":".join(sorted([user_id, friend_id]))
     return hashlib.sha256(participants.encode("utf-8")).hexdigest()
+
+
+def create_message(sender_id, recipient_id, text):
+    sent_at = datetime.now(timezone.utc).isoformat()
+    return {
+        "conversationId": conversation_id(sender_id, recipient_id),
+        "messageKey": f"{sent_at}#{uuid.uuid4()}",
+        "messageId": str(uuid.uuid4()),
+        "senderId": sender_id,
+        "recipientId": recipient_id,
+        "text": text,
+        "sentAt": sent_at,
+    }
 
 
 def connect(event, _context):
@@ -70,37 +85,47 @@ def send_message(event, _context):
     if not recipient_id or not text or len(text) > 2000:
         return response(400, {"detail": "Enter a message up to 2,000 characters."})
 
+    if recipient_id == AI_SUPPORT_ID:
+        return response(
+            400,
+            {"detail": "Use the Therapist streaming endpoint for this contact."},
+        )
+
     friendship = friendships.get_item(
         Key={"userId": sender_id, "friendId": recipient_id}
     )
     if "Item" not in friendship:
         return response(403, {"detail": "You can only message friends."})
 
-    sent_at = datetime.now(timezone.utc).isoformat()
-    message = {
-        "conversationId": conversation_id(sender_id, recipient_id),
-        "messageKey": f"{sent_at}#{uuid.uuid4()}",
-        "messageId": str(uuid.uuid4()),
-        "senderId": sender_id,
-        "recipientId": recipient_id,
-        "text": text,
-        "sentAt": sent_at,
-    }
+    message = create_message(sender_id, recipient_id, text)
     messages.put_item(Item=message)
-
     friendships.update_item(
         Key={"userId": sender_id, "friendId": recipient_id},
-        UpdateExpression="SET lastMessagePreview = :text, lastMessageAt = :sentAt, lastReadAt = :sentAt, unreadCount = :zero",
-        ExpressionAttributeValues={":text": text[:80], ":sentAt": sent_at, ":zero": 0},
+        UpdateExpression=(
+            "SET lastMessagePreview = :text, lastMessageAt = :sentAt, "
+            "lastReadAt = :sentAt, unreadCount = :zero"
+        ),
+        ExpressionAttributeValues={
+            ":text": text[:80],
+            ":sentAt": message["sentAt"],
+            ":zero": 0,
+        },
     )
     friendships.update_item(
         Key={"userId": recipient_id, "friendId": sender_id},
-        UpdateExpression="SET lastMessagePreview = :text, lastMessageAt = :sentAt ADD unreadCount :one",
-        ExpressionAttributeValues={":text": text[:80], ":sentAt": sent_at, ":one": 1},
+        UpdateExpression=(
+            "SET lastMessagePreview = :text, lastMessageAt = :sentAt "
+            "ADD unreadCount :one"
+        ),
+        ExpressionAttributeValues={
+            ":text": text[:80],
+            ":sentAt": message["sentAt"],
+            ":one": 1,
+        },
     )
 
     payload = json.dumps({"type": "message", "message": message}).encode("utf-8")
-    for user_id in {sender_id, recipient_id}:
+    for user_id in (sender_id, recipient_id):
         deliver_to_user(event, user_id, payload)
 
     return response(200, {"messageId": message["messageId"]})

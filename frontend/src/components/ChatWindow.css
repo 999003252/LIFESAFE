@@ -17,6 +17,32 @@
   letter-spacing: 0.08rem;
 }
 
+.chat-window .ai-chat-header {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.chat-window .ai-chat-label {
+  padding: 0.18rem 0.45rem;
+  border: 1px solid #ef9011;
+  border-radius: 999px;
+  color: #ef9011;
+  font-family: inherit;
+  font-size: 0.65rem;
+  letter-spacing: 0.05rem;
+}
+
+.chat-window .ai-disclaimer {
+  flex-shrink: 0;
+  padding: 0.7rem 2rem;
+  border-bottom: 1px solid #3b3328;
+  background: #211d18;
+  color: #c7b99f;
+  font-size: 0.78rem;
+  line-height: 1.4;
+}
+
 .chat-window .messages {
   flex: 1;
   min-height: 0;
@@ -49,6 +75,7 @@
   border-radius: 1rem;
   color: #fff;
   line-height: 1.45;
+  white-space: pre-wrap;
 }
 
 .chat-window .received {
@@ -108,8 +135,31 @@
   font-size: 0.82rem;
 }
 
+.chat-window .ai-thinking {
+  color: #c7b99f;
+  font-size: 0.82rem;
+  font-style: italic;
+}
+
+.chat-window .streaming-cursor {
+  display: inline-block;
+  width: 0.45rem;
+  height: 1rem;
+  margin-left: 0.18rem;
+  background: #ef9011;
+  vertical-align: -0.15rem;
+  animation: streaming-cursor-blink 0.8s steps(2, start) infinite;
+}
+
+@keyframes streaming-cursor-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
 @media (max-width: 560px) {
   .chat-window .chat-header,
+  .chat-window .ai-disclaimer,
   .chat-window .messages,
   .chat-window .chat-footer {
     padding-left: 1rem;

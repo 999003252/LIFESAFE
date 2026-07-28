@@ -1,6 +1,12 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { getAuth, getCookieValue, setCookieValue } from "../auth";
-import { fetchFriends, fetchMessages, fetchRealtimeConfig, markFriendRead } from "../api/friends";
+import {
+  fetchFriends,
+  fetchMessages,
+  fetchRealtimeConfig,
+  markFriendRead,
+  streamAiMessage,
+} from "../api/friends";
 import FriendsList from "../components/FriendsList";
 import ChatWindow from "../components/ChatWindow";
 import "./FriendsPage.css";
@@ -15,6 +21,7 @@ export default function FriendsPage() {
   );
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
+  const [aiSending, setAiSending] = useState(false);
   const socketRef = useRef(null);
   const selectedFriendRef = useRef(null);
 
@@ -62,6 +69,99 @@ export default function FriendsPage() {
       .catch((loadError) => setError(loadError.message));
   }, [currentUser, selectedFriend]);
 
+  const handleMessagePayload = useCallback((payload) => {
+    if (payload.type === "messageError" || payload.type === "aiMessageError") {
+      setAiSending(false);
+      if (payload.type === "aiMessageError") {
+        setConversations((current) => {
+          const existing = current[payload.friendId] || [];
+          return {
+            ...current,
+            [payload.friendId]: existing.filter(
+              (message) => message.messageId !== payload.messageId
+            ),
+          };
+        });
+      }
+      setError(payload.detail || "The message could not be sent.");
+      return;
+    }
+
+    if (payload.type === "aiMessageStarted") {
+      const message = { ...payload.message, streaming: true };
+      const friendId = message.senderId;
+      setAiSending(true);
+      setError("");
+      setConversations((current) => {
+        const existing = current[friendId] || [];
+        if (existing.some((item) => item.messageId === message.messageId)) return current;
+        return { ...current, [friendId]: [...existing, message] };
+      });
+      return;
+    }
+
+    if (payload.type === "aiMessageDelta") {
+      setConversations((current) => ({
+        ...current,
+        [payload.friendId]: (current[payload.friendId] || []).map((message) => (
+          message.messageId === payload.messageId
+            ? { ...message, text: `${message.text}${payload.delta}` }
+            : message
+        )),
+      }));
+      return;
+    }
+
+    if (payload.type === "aiMessageCompleted") {
+      const message = payload.message;
+      const friendId = message.senderId;
+      setAiSending(false);
+      setError("");
+      setConversations((current) => ({
+        ...current,
+        [friendId]: (current[friendId] || []).map((item) => (
+          item.messageId === message.messageId ? message : item
+        )),
+      }));
+      setFriends((current) => current.map((friend) => (
+        friend.userId === friendId
+          ? {
+            ...friend,
+            lastMessagePreview: message.text,
+            lastMessageAt: message.sentAt,
+          }
+          : friend
+      )));
+      return;
+    }
+
+    if (payload.type !== "message") return;
+
+    setError("");
+    const message = payload.message;
+    const friendId = message.senderId === currentUser ? message.recipientId : message.senderId;
+    const isIncoming = message.recipientId === currentUser;
+    const isOpenConversation = selectedFriendRef.current?.userId === friendId;
+    setConversations((current) => {
+      const existing = current[friendId] || [];
+      if (existing.some((item) => item.messageId === message.messageId)) return current;
+      return { ...current, [friendId]: [...existing, message] };
+    });
+    setFriends((current) => current.map((friend) => (
+      friend.userId === friendId
+        ? {
+          ...friend,
+          lastMessagePreview: message.text,
+          lastMessageAt: message.sentAt,
+          unreadCount: isIncoming && !isOpenConversation ? (friend.unreadCount || 0) + 1 : 0,
+        }
+        : friend
+    )));
+    if (isIncoming && isOpenConversation) {
+      markFriendRead(currentUser, friendId).catch(() => {});
+    }
+  }, [currentUser]);
+
   useEffect(() => {
     let socket;
     let reconnectTimer;
@@ -75,33 +175,10 @@ export default function FriendsPage() {
         socket = new WebSocket(`${websocketUrl}?userId=${encodeURIComponent(currentUser)}`);
         socketRef.current = socket;
         socket.onmessage = (event) => {
-          const payload = JSON.parse(event.data);
-          if (payload.type !== "message") return;
-
-          const message = payload.message;
-          const friendId = message.senderId === currentUser ? message.recipientId : message.senderId;
-          const isIncoming = message.recipientId === currentUser;
-          const isOpenConversation = selectedFriendRef.current?.userId === friendId;
-          setConversations((current) => {
-            const existing = current[friendId] || [];
-            if (existing.some((item) => item.messageId === message.messageId)) return current;
-            return { ...current, [friendId]: [...existing, message] };
-          });
-          setFriends((current) => current.map((friend) => (
-            friend.userId === friendId
-              ? {
-                ...friend,
-                lastMessagePreview: message.text,
-                lastMessageAt: message.sentAt,
-                unreadCount: isIncoming && !isOpenConversation ? (friend.unreadCount || 0) + 1 : 0,
-              }
-              : friend
-          )));
-          if (isIncoming && isOpenConversation) {
-            markFriendRead(currentUser, friendId).catch(() => {});
-          }
+          handleMessagePayload(JSON.parse(event.data));
         };
         socket.onclose = () => {
+          setAiSending(false);
           if (!stopped) reconnectTimer = window.setTimeout(connect, 2000);
         };
       } catch {
@@ -115,10 +192,31 @@ export default function FriendsPage() {
       window.clearTimeout(reconnectTimer);
       socket?.close();
     };
-  }, [currentUser]);
+  }, [currentUser, handleMessagePayload]);
 
   const sendMessage = (text) => {
-    if (!selectedFriend || socketRef.current?.readyState !== WebSocket.OPEN) {
+    if (!selectedFriend) {
+      setError("Choose a contact before sending a message.");
+      return false;
+    }
+
+    if (selectedFriend.isAi) {
+      setError("");
+      setAiSending(true);
+      streamAiMessage(currentUser, text, handleMessagePayload).catch((streamError) => {
+        setAiSending(false);
+        setConversations((current) => ({
+          ...current,
+          [selectedFriend.userId]: (current[selectedFriend.userId] || []).filter(
+            (message) => !message.streaming
+          ),
+        }));
+        setError(streamError.message || "Therapist could not respond.");
+      });
+      return true;
+    }
+
+    if (socketRef.current?.readyState !== WebSocket.OPEN) {
       setError("Messaging is reconnecting. Please try again.");
       return false;
     }
@@ -128,6 +226,7 @@ export default function FriendsPage() {
       recipientId: selectedFriend.userId,
       text,
     }));
+    setError("");
     return true;
   };
 
@@ -162,6 +261,7 @@ export default function FriendsPage() {
         currentUser={currentUser}
         loading={loading}
         error={error}
+        aiSending={selectedFriend?.isAi && aiSending}
         sendMessage={sendMessage}
       />
     </div>

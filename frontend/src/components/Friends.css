@@ -137,9 +137,26 @@
 }
 
 .friends-list .friend-info h4 {
+  display: inline;
   margin-bottom: 0.2rem;
   color: #fff;
   font-size: 0.95rem;
+}
+
+.friends-list .ai-label {
+  margin-left: 0.4rem;
+  padding: 0.08rem 0.3rem;
+  border: 1px solid #ef9011;
+  border-radius: 999px;
+  color: #ef9011;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.04rem;
+  vertical-align: 0.1rem;
+}
+
+.friends-list .ai-avatar i {
+  font-size: 1.35rem;
 }
 
 .friends-list .friend-info p {
