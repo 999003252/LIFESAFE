@@ -39,9 +39,8 @@ export default function ChatWindow({
 
   return (
     <div className="chat-window">
-      <div className={`chat-header ${friend?.isAi ? "ai-chat-header" : ""}`}>
+      <div className="chat-header">
         <span>{friend ? friend.displayName : "Messages"}</span>
-        {friend?.isAi && <span className="ai-chat-label">AI</span>}
       </div>
 
       {friend?.isAi && (

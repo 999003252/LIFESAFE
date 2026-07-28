@@ -17,22 +17,6 @@
   letter-spacing: 0.08rem;
 }
 
-.chat-window .ai-chat-header {
-  display: flex;
-  align-items: center;
-  gap: 0.65rem;
-}
-
-.chat-window .ai-chat-label {
-  padding: 0.18rem 0.45rem;
-  border: 1px solid #ef9011;
-  border-radius: 999px;
-  color: #ef9011;
-  font-family: inherit;
-  font-size: 0.65rem;
-  letter-spacing: 0.05rem;
-}
-
 .chat-window .ai-disclaimer {
   flex-shrink: 0;
   padding: 0.7rem 2rem;
