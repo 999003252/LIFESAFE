@@ -4,8 +4,6 @@ import InputField from '../components/InputField'
 import { setAuth } from '../auth'
 import { ensureProfile } from '../api/friends'
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000'
-
 export default function PasswordLogin() {
   const location = useLocation()
   const navigate = useNavigate()
@@ -52,7 +50,9 @@ export default function PasswordLogin() {
 
       try {
         await ensureProfile(email)
-      } catch {}
+      } catch (profileError) {
+        console.warn("Signed in, but the profile could not be initialized.", profileError)
+      }
 
       navigate("/", { replace: true })
 

@@ -64,7 +64,7 @@ export default function Sidebar({ activeItem = 'Calendar' }) {
       document.removeEventListener('pointerdown', handlePointerDown)
       document.removeEventListener('keydown', handleKeyDown)
     }
-  }, [])
+  }, [email])
 
   return (
     <aside className={`sidebar ${collapsed ? 'collapsed' : ''}`}>

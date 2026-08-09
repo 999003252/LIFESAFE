@@ -92,7 +92,13 @@ export default function ChatWindow({
 
       <div className="chat-footer">
         {error && <p className="chat-error">{error}</p>}
-        <MessageInput sendMessage={sendMessage} disabled={!friend || aiSending} />
+        <MessageInput
+          key={friend?.userId || "no-friend"}
+          sendMessage={sendMessage}
+          disabled={!friend || aiSending}
+          friend={friend}
+          checkIn={friend?.isAi ? null : friend?.latestCheckIn}
+        />
       </div>
     </div>
   );

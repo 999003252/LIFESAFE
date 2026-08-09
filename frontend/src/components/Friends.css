@@ -92,18 +92,33 @@
 .friends-list .friend-card {
   width: 100%;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 0.75rem;
   margin-bottom: 0.35rem;
-  padding: 0.75rem;
   border: 1px solid transparent;
   border-radius: 0.4rem;
+  background: transparent;
+  color: inherit;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.friends-list .friend-card-main {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border: 0;
   background: transparent;
   color: inherit;
   font: inherit;
   text-align: left;
   cursor: pointer;
-  transition: background 0.15s, border-color 0.15s;
+}
+
+.friends-list .friend-card.has-check-in-content .friend-card-main {
+  flex-basis: 100%;
 }
 
 .friends-list .friend-card:hover {
@@ -114,6 +129,11 @@
 .friends-list .friend-card.active {
   background: #161b22;
   border-color: #2c3542;
+}
+
+.friends-list .friend-card.has-check-in {
+  border-color: rgba(239, 144, 17, 0.5);
+  background: rgba(239, 144, 17, 0.06);
 }
 
 .friends-list .avatar {
@@ -167,6 +187,37 @@
   white-space: nowrap;
 }
 
+.friends-list .friend-info .friend-check-in-summary {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: #efb05d;
+}
+
+.friends-list .friend-check-in-summary i {
+  flex-shrink: 0;
+  font-size: 0.95rem;
+}
+
+.friends-list .check-in-button {
+  flex-shrink: 0;
+  margin: -0.25rem 0.75rem 0.7rem 3.95rem;
+  padding: 0.4rem 0.55rem;
+  border: 1px solid #ef9011;
+  border-radius: 0.35rem;
+  background: transparent;
+  color: #efb05d;
+  font-size: 0.7rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.friends-list .check-in-button:hover,
+.friends-list .check-in-button:focus-visible {
+  background: #ef9011;
+  color: #fff;
+}
+
 .friends-empty {
   padding: 1rem 0.75rem;
   color: #78879e;
@@ -218,6 +269,21 @@
   background: #0f1319;
   color: #ef9011;
   font-size: 0.85rem;
+}
+
+.collapsed-friend .check-in-badge {
+  position: absolute;
+  right: -0.2rem;
+  bottom: -0.2rem;
+  display: grid;
+  width: 1.15rem;
+  height: 1.15rem;
+  place-items: center;
+  border: 2px solid #0f1319;
+  border-radius: 50%;
+  background: #ef9011;
+  color: #fff;
+  font-size: 0.65rem;
 }
 
 @media (max-width: 900px) {

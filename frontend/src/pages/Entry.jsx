@@ -51,6 +51,9 @@ const toDisplayEntry = (item) => {
     timestamp: item.timestamp,
     mood: { id: item.mood, icon: item.moodIcon, label: item.moodLabel },
     answers: item.answers,
+    shareWithFriends: item.shareWithFriends || false,
+    shareMessage: item.shareMessage || '',
+    wantsCheckIn: item.wantsCheckIn || false,
     date: new Date(item.timestamp),
     text,
   }
@@ -73,6 +76,9 @@ const Entry = () => {
   const [selectedMood, setSelectedMood] = useState(initialMood)
   const [step, setStep] = useState(0)
   const [answers, setAnswers] = useState(['', '', ''])
+  const [shareWithFriends, setShareWithFriends] = useState(false)
+  const [shareMessage, setShareMessage] = useState('')
+  const [wantsCheckIn, setWantsCheckIn] = useState(false)
   const [entries, setEntries] = useState([])
   const [editingEntry, setEditingEntry] = useState(null)
   const [savedConfirmation, setSavedConfirmation] = useState('')
@@ -98,6 +104,9 @@ const Entry = () => {
     setSelectedMood(moodId)
     setStep(0)
     setAnswers(['', '', ''])
+    setShareWithFriends(false)
+    setShareMessage('')
+    setWantsCheckIn(false)
     setSavedConfirmation('')
     setErrorMessage('')
   }
@@ -107,6 +116,9 @@ const Entry = () => {
     setSelectedMood(todayEntry.mood.id)
     setStep(0)
     setAnswers([0, 1, 2].map((index) => todayEntry.answers[index] || ''))
+    setShareWithFriends(todayEntry.shareWithFriends)
+    setShareMessage(todayEntry.shareMessage)
+    setWantsCheckIn(todayEntry.wantsCheckIn)
     setSavedConfirmation('')
     setErrorMessage('')
   }
@@ -116,6 +128,9 @@ const Entry = () => {
     setSelectedMood(null)
     setStep(0)
     setAnswers(['', '', ''])
+    setShareWithFriends(false)
+    setShareMessage('')
+    setWantsCheckIn(false)
   }
 
   const handleAnswerChange = (text) => {
@@ -125,7 +140,7 @@ const Entry = () => {
   }
 
   const handleNext = () => {
-    if (step < 2) {
+    if (step < 3) {
       setStep(step + 1)
     }
   }
@@ -145,6 +160,9 @@ const Entry = () => {
       moodLabel: moodInfo.label,
       moodIcon: moodInfo.icon,
       answers,
+      shareWithFriends,
+      shareMessage: shareWithFriends ? shareMessage.trim() : '',
+      wantsCheckIn: shareWithFriends && wantsCheckIn,
     }
 
     try {
@@ -159,7 +177,11 @@ const Entry = () => {
             ))
           : [displayEntry, ...currentEntries]
       ))
-      setSavedConfirmation(editingEntry ? 'Entry updated!' : 'Entry saved!')
+      setSavedConfirmation(
+        shareWithFriends
+          ? `Entry ${editingEntry ? 'updated' : 'saved'} and shared with your friends!`
+          : `Entry ${editingEntry ? 'updated' : 'saved'} privately!`,
+      )
       setErrorMessage('')
     } catch {
       setErrorMessage(
@@ -174,6 +196,9 @@ const Entry = () => {
     setSelectedMood(null)
     setStep(0)
     setAnswers(['', '', ''])
+    setShareWithFriends(false)
+    setShareMessage('')
+    setWantsCheckIn(false)
   }
 
   const currentPrompts = selectedMood ? moodPrompts[selectedMood] : null
@@ -226,7 +251,7 @@ const Entry = () => {
         {selectedMood && (
           <div className="entry-slide">
             <div className="slide-progress">
-              {[0, 1, 2].map((i) => (
+              {[0, 1, 2, 3].map((i) => (
                 <span
                   key={i}
                   className={`progress-dot ${i === step ? 'active' : ''} ${i < step ? 'done' : ''}`}
@@ -234,18 +259,79 @@ const Entry = () => {
               ))}
             </div>
 
-            <h2 className="slide-question">{currentPrompts[step]}</h2>
+            {step < 3 ? (
+              <>
+                <h2 className="slide-question">{currentPrompts[step]}</h2>
 
-            <textarea
-              className="slide-textarea"
-              placeholder="Type your answer here..."
-              value={answers[step]}
-              maxLength={300}
-              onChange={(e) => handleAnswerChange(e.target.value)}
-            />
+                <textarea
+                  className="slide-textarea"
+                  placeholder="Type your answer here..."
+                  value={answers[step]}
+                  maxLength={300}
+                  onChange={(e) => handleAnswerChange(e.target.value)}
+                />
+              </>
+            ) : (
+              <div className="share-check-in-card">
+                <div className="share-check-in-heading">
+                  <i className="material-symbols-rounded">favorite</i>
+                  <div>
+                    <h2>Let your people know how you’re doing</h2>
+                    <p>Your journal answers always stay private.</p>
+                  </div>
+                </div>
+
+                <label className="share-toggle-row">
+                  <input
+                    type="checkbox"
+                    checked={shareWithFriends}
+                    onChange={(event) => {
+                      const checked = event.target.checked
+                      setShareWithFriends(checked)
+                      if (!checked) setWantsCheckIn(false)
+                    }}
+                  />
+                  <span className="share-toggle" aria-hidden="true" />
+                  <span>
+                    <strong>Share my mood with friends</strong>
+                    <small>Only your mood and the optional note below will be shared.</small>
+                  </span>
+                </label>
+
+                {shareWithFriends && (
+                  <div className="share-options">
+                    <label htmlFor="share-message">What would you like your friends to know?</label>
+                    <textarea
+                      id="share-message"
+                      className="share-message"
+                      placeholder="A short note for your friends (optional)"
+                      value={shareMessage}
+                      maxLength={160}
+                      onChange={(event) => setShareMessage(event.target.value)}
+                    />
+                    <span className="share-character-count">{shareMessage.length}/160</span>
+
+                    <label className="support-request-row">
+                      <input
+                        type="checkbox"
+                        checked={wantsCheckIn}
+                        onChange={(event) => setWantsCheckIn(event.target.checked)}
+                      />
+                      <i className="material-symbols-rounded">notifications_active</i>
+                      <span>
+                        <strong>I’d appreciate someone checking in</strong>
+                        <small>Your friends will see that you’d like them to reach out.</small>
+                      </span>
+                    </label>
+                  </div>
+                )}
+              </div>
+            )}
 
             <div className="slide-footer">
-              <span className="supporting-text">{answers[step].length}/300</span>
+              <span className="supporting-text">
+                {step < 3 ? `${answers[step].length}/300` : 'Sharing is always optional'}
+              </span>
 
               <div className="slide-buttons">
                 {editingEntry && (
@@ -258,13 +344,13 @@ const Entry = () => {
                     Back
                   </button>
                 )}
-                {step < 2 && (
+                {step < 3 && (
                   <button className="send-button" onClick={handleNext}>
                     Next
                     <i className="material-symbols-rounded">arrow_forward</i>
                   </button>
                 )}
-                {step === 2 && (
+                {step === 3 && (
                   <button className="send-button" onClick={handleSaveEntry}>
                     {editingEntry ? 'Update Entry' : 'Save Entry'}
                     <i className="material-symbols-rounded">check</i>

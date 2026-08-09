@@ -22,6 +22,11 @@ function FriendAvatar({ friend }) {
   return <span className="avatar" aria-hidden="true">{initials(friend.displayName)}</span>;
 }
 
+function checkInSummary(checkIn) {
+  if (checkIn.wantsCheckIn) return "Could use a check-in";
+  return `Feeling ${checkIn.moodLabel.toLowerCase()}`;
+}
+
 export default function FriendsList({
   currentUser,
   friends,
@@ -72,20 +77,41 @@ export default function FriendsList({
 
           <div className="friends-results">
             {visibleFriends.map((friend) => (
-              <button
-                type="button"
+              <div
                 key={friend.userId}
-                className={`friend-card ${selectedFriend?.userId === friend.userId ? "active" : ""}`}
-                onClick={() => setSelectedFriend(friend)}
+                className={`friend-card ${selectedFriend?.userId === friend.userId ? "active" : ""} ${friend.latestCheckIn ? "has-check-in-content" : ""} ${friend.checkInUnread ? "has-check-in" : ""}`}
               >
-                <FriendAvatar friend={friend} />
-                <div className="friend-info">
-                  <h4>{friend.displayName}</h4>
-                  {friend.isAi && <span className="ai-label">AI</span>}
-                  <p>{friend.lastMessagePreview || "No messages yet"}</p>
-                </div>
-                {!!friend.unreadCount && <i className="material-symbols-rounded unread-bell" aria-label={`${friend.unreadCount} unread messages`}>notifications</i>}
-              </button>
+                <button
+                  type="button"
+                  className="friend-card-main"
+                  onClick={() => setSelectedFriend(friend)}
+                >
+                  <FriendAvatar friend={friend} />
+                  <div className="friend-info">
+                    <h4>{friend.displayName}</h4>
+                    {friend.isAi && <span className="ai-label">AI</span>}
+                    {friend.latestCheckIn ? (
+                      <p className="friend-check-in-summary">
+                        <i className="material-symbols-rounded">{friend.latestCheckIn.moodIcon}</i>
+                        {checkInSummary(friend.latestCheckIn)}
+                      </p>
+                    ) : (
+                      <p>{friend.lastMessagePreview || "No messages yet"}</p>
+                    )}
+                  </div>
+                  {!!friend.unreadCount && <i className="material-symbols-rounded unread-bell" aria-label={`${friend.unreadCount} unread messages`}>notifications</i>}
+                </button>
+                {friend.latestCheckIn && !friend.isAi && (
+                  <button
+                    type="button"
+                    className="check-in-button"
+                    onClick={() => setSelectedFriend(friend)}
+                    aria-label={`Check in with ${friend.displayName}`}
+                  >
+                    Check in
+                  </button>
+                )}
+              </div>
             ))}
 
             {!friends.length && <p className="friends-empty">Add a registered user to start a conversation.</p>}
@@ -107,6 +133,7 @@ export default function FriendsList({
             >
               <FriendAvatar friend={friend} />
               {!!friend.unreadCount && <i className="material-symbols-rounded unread-bell" aria-label={`${friend.unreadCount} unread messages`}>notifications</i>}
+              {friend.checkInUnread && <i className="material-symbols-rounded check-in-badge" aria-label={`${friend.displayName} shared a check-in`}>favorite</i>}
             </button>
           ))}
         </div>

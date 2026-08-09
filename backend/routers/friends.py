@@ -66,6 +66,8 @@ def list_friends(userId: str):
                         ),
                         "lastMessageAt": friendship_by_id[friend_id].get("lastMessageAt"),
                         "unreadCount": friendship_by_id[friend_id].get("unreadCount", 0),
+                        "latestCheckIn": friendship_by_id[friend_id].get("latestCheckIn"),
+                        "checkInUnread": friendship_by_id[friend_id].get("checkInUnread", False),
                     }
                 )
         return [support, *friends]
@@ -143,10 +145,14 @@ def mark_friend_read(friendship: FriendReadIn):
 
     FRIENDSHIPS_TABLE.update_item(
         Key={"userId": user_id, "friendId": friend_id},
-        UpdateExpression="SET unreadCount = :zero, lastReadAt = :readAt",
+        UpdateExpression=(
+            "SET unreadCount = :zero, lastReadAt = :readAt, "
+            "checkInUnread = :checkInRead"
+        ),
         ExpressionAttributeValues={
             ":zero": 0,
             ":readAt": datetime.now(timezone.utc).isoformat(),
+            ":checkInRead": False,
         },
     )
     return {"status": "read"}

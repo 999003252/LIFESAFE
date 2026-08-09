@@ -65,7 +65,9 @@ export default function FriendsPage() {
         return markFriendRead(currentUser, selectedFriend.userId);
       })
       .then(() => setFriends((current) => current.map((friend) => (
-        friend.userId === selectedFriend.userId ? { ...friend, unreadCount: 0 } : friend
+        friend.userId === selectedFriend.userId
+          ? { ...friend, unreadCount: 0, checkInUnread: false }
+          : friend
       ))))
       .catch((loadError) => setError(loadError.message));
   }, [currentUser, selectedFriend]);
