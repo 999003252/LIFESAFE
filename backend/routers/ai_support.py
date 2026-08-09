@@ -1,5 +1,3 @@
-"""Streaming OpenAI-backed support contact."""
-
 import hashlib
 import json
 import logging
