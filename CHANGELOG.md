@@ -5,6 +5,7 @@ This changelog summarizes major milestones and notable changes in the Lifesafe r
 ## Unreleased
 - Ongoing: Polishing UI, AI Therapist streaming improvements, and authentication refinements.
 - Added opt-in social mood check-ins with private journal separation, friend notifications, support requests, and editable suggested chat replies.
+- Replaced static meditation tips with a timed, four-cycle guided breathing exercise with pause, resume, and restart controls.
 
 ## 2026-07-28 — Streaming AI, authentication, and polishing
 - Added streaming Therapist contact and backend AI support (backend/ai_support.py, routers/ai_support.py). Frontend streaming APIs and tests added.

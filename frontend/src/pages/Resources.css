@@ -154,6 +154,10 @@
   animation: modalIn 0.2s ease;
 }
 
+.modal-sheet.meditation-sheet {
+  max-width: 480px;
+}
+
 @keyframes modalIn {
   from { opacity: 0; transform: translateY(20px); }
   to   { opacity: 1; transform: translateY(0); }
@@ -182,6 +186,216 @@
   color: #78879e;
   line-height: 1.75;
   margin-bottom: 1.5rem;
+}
+
+.meditation-intro {
+  margin: 0 0 1.2rem;
+  color: #9aa8bc;
+  font-size: 0.85rem;
+  line-height: 1.55;
+}
+
+.breathing-guide {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  padding: 1.25rem;
+  border: 1px solid #2c3542;
+  border-radius: 1rem;
+  background: #10151c;
+}
+
+.breathing-orb {
+  position: relative;
+  display: grid;
+  width: 9.5rem;
+  height: 9.5rem;
+  place-items: center;
+}
+
+.breathing-orb-ring,
+.breathing-orb-core {
+  position: absolute;
+  border-radius: 50%;
+}
+
+.breathing-orb-ring {
+  inset: 0;
+  border: 1px solid rgba(239, 144, 17, 0.28);
+  background: radial-gradient(circle, rgba(239, 144, 17, 0.09), transparent 68%);
+}
+
+.breathing-orb-core {
+  display: grid;
+  width: 7.2rem;
+  height: 7.2rem;
+  place-items: center;
+  background: linear-gradient(145deg, #f5a12f, #d97706);
+  box-shadow: 0 0 2.2rem rgba(239, 144, 17, 0.25);
+  color: #fff;
+  transform: scale(0.64);
+}
+
+.breathing-orb-core span {
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.breathing-orb-core i {
+  font-size: 2rem;
+}
+
+.breathing-orb.inhale .breathing-orb-core {
+  animation: breathe-in var(--breath-duration) linear forwards;
+}
+
+.breathing-orb.hold-in .breathing-orb-core {
+  transform: scale(1);
+}
+
+.breathing-orb.exhale .breathing-orb-core {
+  animation: breathe-out var(--breath-duration) linear forwards;
+}
+
+.breathing-orb.hold-out .breathing-orb-core {
+  transform: scale(0.64);
+}
+
+.breathing-orb.paused .breathing-orb-core {
+  animation-play-state: paused;
+}
+
+@keyframes breathe-in {
+  from { transform: scale(0.64); }
+  to { transform: scale(1); }
+}
+
+@keyframes breathe-out {
+  from { transform: scale(1); }
+  to { transform: scale(0.64); }
+}
+
+.breathing-copy {
+  min-height: 3.2rem;
+  margin-top: 0.65rem;
+  text-align: center;
+}
+
+.breathing-copy h3,
+.meditation-complete h3 {
+  margin: 0;
+  color: #fff;
+  font-size: 1.05rem;
+}
+
+.breathing-copy p,
+.meditation-complete p {
+  margin: 0.3rem 0 0;
+  color: #78879e;
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+.breathing-progress {
+  display: flex;
+  gap: 0.45rem;
+  margin: 0.85rem 0 1rem;
+}
+
+.breathing-progress span {
+  width: 1.6rem;
+  height: 0.25rem;
+  border-radius: 999px;
+  background: #343d4a;
+}
+
+.breathing-progress span.active {
+  background: #efb05d;
+}
+
+.breathing-progress span.complete {
+  background: #ef9011;
+}
+
+.breathing-controls {
+  display: flex;
+  justify-content: center;
+  gap: 0.6rem;
+}
+
+.breathing-primary,
+.breathing-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  min-height: 2.6rem;
+  padding: 0.65rem 1rem;
+  border-radius: 0.55rem;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.breathing-primary {
+  border: 1px solid #ef9011;
+  background: #ef9011;
+  color: #fff;
+}
+
+.breathing-primary:hover,
+.breathing-primary:focus-visible {
+  background: #d97c0d;
+}
+
+.breathing-primary i {
+  font-size: 1.1rem;
+}
+
+.breathing-secondary {
+  border: 1px solid #3b4654;
+  background: #1e242d;
+  color: #b8c3d2;
+}
+
+.breathing-secondary:hover,
+.breathing-secondary:focus-visible {
+  border-color: #ef9011;
+  color: #fff;
+}
+
+.meditation-note {
+  margin: 0.8rem 0 0;
+  color: #66758a;
+  font-size: 0.68rem;
+  line-height: 1.4;
+  text-align: center;
+}
+
+.meditation-complete {
+  padding: 2rem 1.25rem;
+  border: 1px solid rgba(239, 144, 17, 0.4);
+  border-radius: 1rem;
+  background: rgba(239, 144, 17, 0.07);
+  text-align: center;
+}
+
+.meditation-complete > i {
+  display: block;
+  margin-bottom: 0.65rem;
+  color: #ef9011;
+  font-size: 2.5rem;
+}
+
+.meditation-complete .breathing-primary {
+  margin-top: 1rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .breathing-orb-core {
+    animation-duration: 0.01ms !important;
+  }
 }
 
 .affirmation-text {
