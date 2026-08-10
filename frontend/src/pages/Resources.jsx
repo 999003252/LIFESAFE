@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import './Resources.css'
 
 const affirmations = [
@@ -11,35 +11,67 @@ const affirmations = [
   "Growth happens in the moments you almost give up.",
 ]
 
-const meditations = [
-  {
-    title: "Box Breathing",
-    body: "Inhale for 4 counts → Hold for 4 → Exhale for 4 → Hold for 4. Repeat 4–6 times to calm your nervous system.",
-  },
-  {
-    title: "5-4-3-2-1 Grounding",
-    body: "Name 5 things you see, 4 you can touch, 3 you hear, 2 you smell, 1 you taste. Anchors you in the present moment.",
-  },
-  {
-    title: "Body Scan",
-    body: "Close your eyes. Slowly move your attention from your feet upward, releasing tension in each body part as you go.",
-  },
+const breathingPhases = [
+  { id: 'inhale', label: 'Breathe in', instruction: 'Slowly through your nose', duration: 4 },
+  { id: 'hold-in', label: 'Hold', instruction: 'Let your body become still', duration: 4 },
+  { id: 'exhale', label: 'Breathe out', instruction: 'Gently through your mouth', duration: 4 },
+  { id: 'hold-out', label: 'Hold', instruction: 'Rest before the next breath', duration: 4 },
 ]
+
+const totalBreathingCycles = 4
 
 function Modal({ type, onClose }) {
   const [affirmIdx, setAffirmIdx] = useState(
     () => Math.floor(Math.random() * affirmations.length)
   )
-  const [tipIdx] = useState(
-    () => Math.floor(Math.random() * meditations.length)
-  )
+  const [phaseIndex, setPhaseIndex] = useState(0)
+  const [secondsLeft, setSecondsLeft] = useState(breathingPhases[0].duration)
+  const [completedCycles, setCompletedCycles] = useState(0)
+  const [hasStarted, setHasStarted] = useState(false)
+  const [isRunning, setIsRunning] = useState(false)
+
+  const phase = breathingPhases[phaseIndex]
+  const isComplete = completedCycles >= totalBreathingCycles
+
+  useEffect(() => {
+    if (type !== 'meditation' || !isRunning) return undefined
+
+    const timer = window.setInterval(() => {
+      setSecondsLeft((current) => {
+        if (current > 1) return current - 1
+
+        const nextPhaseIndex = (phaseIndex + 1) % breathingPhases.length
+        if (nextPhaseIndex === 0) {
+          const nextCompletedCycles = completedCycles + 1
+          setCompletedCycles(nextCompletedCycles)
+          if (nextCompletedCycles >= totalBreathingCycles) {
+            setIsRunning(false)
+            return 0
+          }
+        }
+
+        setPhaseIndex(nextPhaseIndex)
+        return breathingPhases[nextPhaseIndex].duration
+      })
+    }, 1000)
+
+    return () => window.clearInterval(timer)
+  }, [completedCycles, isRunning, phaseIndex, type])
+
+  const resetBreathing = (startImmediately = false) => {
+    setPhaseIndex(0)
+    setSecondsLeft(breathingPhases[0].duration)
+    setCompletedCycles(0)
+    setHasStarted(startImmediately)
+    setIsRunning(startImmediately)
+  }
 
   if (!type) return null
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-sheet" onClick={(e) => e.stopPropagation()}>
-        <button className="modal-x" onClick={onClose}>
+      <div className={`modal-sheet ${type === 'meditation' ? 'meditation-sheet' : ''}`} onClick={(e) => e.stopPropagation()}>
+        <button type="button" className="modal-x" onClick={onClose} aria-label="Close resource">
           <i className="material-symbols-rounded">close</i>
         </button>
 
@@ -83,9 +115,70 @@ function Modal({ type, onClose }) {
 
         {type === 'meditation' && (
           <>
-            <p className="modal-eyebrow">Meditation Tips</p>
-            <h2 className="modal-title">{meditations[tipIdx].title}</h2>
-            <p className="modal-body">{meditations[tipIdx].body}</p>
+            <p className="modal-eyebrow">Guided Meditation</p>
+            <h2 className="modal-title">One-Minute Reset</h2>
+            <p className="meditation-intro">
+              Follow the circle through four slow rounds of box breathing.
+            </p>
+
+            {isComplete ? (
+              <div className="meditation-complete" role="status" aria-live="polite">
+                <i className="material-symbols-rounded">spa</i>
+                <h3>You did it</h3>
+                <p>Notice how your body feels, then return to your day when you’re ready.</p>
+                <button type="button" className="breathing-primary" onClick={() => resetBreathing(true)}>
+                  Breathe again
+                </button>
+              </div>
+            ) : (
+              <div className="breathing-guide">
+                <div
+                  className={`breathing-orb ${hasStarted ? phase.id : 'idle'} ${isRunning ? '' : 'paused'}`}
+                  style={{ '--breath-duration': `${phase.duration}s` }}
+                  role="status"
+                  aria-live="polite"
+                  aria-label={hasStarted ? `${phase.label}, ${secondsLeft} seconds` : 'Breathing exercise ready'}
+                >
+                  <div className="breathing-orb-ring" />
+                  <div className="breathing-orb-core">
+                    <span>{hasStarted ? secondsLeft : <i className="material-symbols-rounded">air</i>}</span>
+                  </div>
+                </div>
+
+                <div className="breathing-copy">
+                  <h3>{hasStarted ? phase.label : 'Find a comfortable position'}</h3>
+                  <p>{hasStarted ? phase.instruction : 'Relax your shoulders and place both feet on the floor.'}</p>
+                </div>
+
+                <div className="breathing-progress" aria-label={`${completedCycles} of ${totalBreathingCycles} breathing cycles complete`}>
+                  {Array.from({ length: totalBreathingCycles }, (_, index) => (
+                    <span key={index} className={index < completedCycles ? 'complete' : index === completedCycles && hasStarted ? 'active' : ''} />
+                  ))}
+                </div>
+
+                <div className="breathing-controls">
+                  {!hasStarted ? (
+                    <button type="button" className="breathing-primary" onClick={() => resetBreathing(true)}>
+                      Begin breathing
+                    </button>
+                  ) : (
+                    <>
+                      <button type="button" className="breathing-primary" onClick={() => setIsRunning((running) => !running)}>
+                        <i className="material-symbols-rounded">{isRunning ? 'pause' : 'play_arrow'}</i>
+                        {isRunning ? 'Pause' : 'Resume'}
+                      </button>
+                      <button type="button" className="breathing-secondary" onClick={() => resetBreathing(false)}>
+                        Restart
+                      </button>
+                    </>
+                  )}
+                </div>
+              </div>
+            )}
+
+            <p className="meditation-note">
+              Breathe normally or stop if you feel lightheaded or uncomfortable.
+            </p>
           </>
         )}
 
@@ -99,7 +192,7 @@ function Modal({ type, onClose }) {
           </>
         )}
 
-        <button className="modal-close-btn" onClick={onClose}>Done</button>
+        <button type="button" className="modal-close-btn" onClick={onClose}>Done</button>
       </div>
     </div>
   )
@@ -121,8 +214,8 @@ const cards = [
   },
   {
     id: 'meditation',
-    label: 'Meditation Tips',
-    desc: 'Breathing and grounding techniques.',
+    label: 'Guided Meditation',
+    desc: 'Follow a one-minute breathing reset.',
     icon: 'self_improvement',
   },
   {
