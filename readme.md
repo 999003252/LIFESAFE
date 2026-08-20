@@ -34,7 +34,7 @@ Built during the UConn NEXT Fellowship (Vergnano Institute for Impact) in partne
 
 | Presentation | |
 |---|---|
-| [📄 lifesafe-presentation.pdf](docs/lifesafe-presentation.pdf) | |
+| [📄 lifesafe-presentation.pdf](docs/LIFESAFE_FINAL_PRESENTATION.pdf) | |
 
 ## The Problem
 
