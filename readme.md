@@ -32,7 +32,9 @@ Built during the UConn NEXT Fellowship (Vergnano Institute for Impact) in partne
 |---|---|
 | ![Add friend](docs/screenshots/add-friend.webp) | ![Messaging](docs/screenshots/messaging.webp) |
 
----
+| Presentation | |
+|---|---|
+| [📄 lifesafe-presentation.pdf](docs/lifesafe-presentation.pdf) | |
 
 ## The Problem
 
